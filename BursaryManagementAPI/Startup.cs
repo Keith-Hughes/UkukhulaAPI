@@ -103,7 +103,15 @@ public class Startup
         services.AddScoped<UserBLL>();
         services.AddScoped<UploadDocumentBLL>();
 
-        
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAnyOrigin", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyHeader()
+                       .AllowAnyMethod();
+            });
+        });
         services.AddControllers();
 
         services.AddSwaggerGen(c =>
@@ -140,9 +148,8 @@ public class Startup
 
         app.UseRouting();
         app.UseAuthorization();
-        
-        
-        
+        app.UseCors("AllowAnyOrigin");
+
 
         app.UseEndpoints(endpoints =>
         {
