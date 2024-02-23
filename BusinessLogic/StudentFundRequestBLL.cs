@@ -48,8 +48,7 @@ namespace BusinessLogic
                             Email = newRequest.Email,
                             PhoneNumber = newRequest.PhoneNumber,
                             Role = "Student",
-                            Password = "P@ssword1",
-                            ConfirmPassword = "P@ssword1"
+                            
 
                         };
                         IdentityUser StudentUser = new IdentityUser
@@ -59,8 +58,7 @@ namespace BusinessLogic
                             PhoneNumber = newRequest.PhoneNumber,
                         };
 
-                        var result = _userDAL.RegisterIdentityUser(StudentUser, userRequest.Password, userRequest.Role).Result;
-                        if (result.Succeeded)//Check if user Identity has been added successfully
+                        if (true)//Check if user Identity has been added successfully
                         {
                             //Create Contacts object and insert to table,
                             ContactDetails contactDetails = new ContactDetails

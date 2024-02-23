@@ -1,22 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using BusinessLogic;
+﻿using BusinessLogic;
 using DataAccess;
 using Azure.Storage.Blobs;
 using Microsoft.OpenApi.Models;
 using System;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Net.Http.Headers;
 using BursaryManagementAPI;
-using System.Security.Claims;
 using BusinessLogic.Models;
 
 /// <summary>
@@ -32,8 +24,6 @@ public class Startup
 
     public IConfiguration Configuration { get; }
 
-
-
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
@@ -42,7 +32,7 @@ public class Startup
         //adding db connection services to the dependency injection container (Single object used in the applications lifetime)
 
         services.AddSingleton<SqlConnection>(_ => new SqlConnection(connectionString));
-        
+
         services.AddScoped<UniversityDAL>();
         services.AddScoped<UserDAL>();
         services.AddScoped<UploadDocumentDAL>();
@@ -54,8 +44,6 @@ public class Startup
         services.AddScoped<AdminBLL>();
         services.AddScoped<AdminDAL>();
 
-
-
         //adding Azure services to the dependency injection container (scoped to instantiate a new object when requested )
         services.AddScoped(provider =>
         {
@@ -64,33 +52,19 @@ public class Startup
             return blobServiceClient;
         });
 
-
-        _ = services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
-
-        services.AddIdentity<IdentityUser, IdentityRole>(options =>
-        {
-            options.Password.RequireDigit = true;
-            options.Password.RequireLowercase = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequiredLength = 8;
-            options.User.RequireUniqueEmail = true;
-            
-        }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
-
         services.AddAuthentication(auth =>
         {
             auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options =>
-        {   
+        {
             options.TokenValidationParameters = new TokenValidationParameters
-            {   
-           
+            {
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidAudience = Configuration["AuthSettings:Audience"],
                 ValidIssuer = Configuration["AuthSettings:Issuer"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AuthSettings:Key"]) ),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AuthSettings:Key"])),
                 ValidateIssuerSigningKey = true,
             };
         });
@@ -142,14 +116,13 @@ public class Startup
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "BursaryManagementAPI v1");
             });
         }
-            
+
         app.UseAuthentication();
         app.UseHttpsRedirection();
 
         app.UseRouting();
         app.UseAuthorization();
         app.UseCors("AllowAnyOrigin");
-
 
         app.UseEndpoints(endpoints =>
         {

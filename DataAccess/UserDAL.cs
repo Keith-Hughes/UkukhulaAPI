@@ -1,29 +1,13 @@
 ﻿using DataAccess.Entity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32;
-using System.Data.Common;
-using System.Reflection.Metadata.Ecma335;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace DataAccess
 {
-
-    public class UserDAL(SqlConnection connection, UserManager<IdentityUser> userManager)
+    public class UserDAL(SqlConnection connection)
     {
         private readonly SqlConnection _connection = connection;
-        private readonly UserManager<IdentityUser> _userManager = userManager;
-        //Returns null if no user exists
-        public Task<IdentityUser?> checkUserByEmail(string email)
-        {
-            return _userManager.FindByEmailAsync(email);
-        }
 
-        public async Task<bool> checkUserPassword(IdentityUser user, string password)
-        {
-            return await _userManager.CheckPasswordAsync(user, password);
-        }
+        //Returns null if no user exists
 
         public int GetRoleIdByName(string roleName)
         {
@@ -46,10 +30,36 @@ namespace DataAccess
             }
         }
 
+        public string getRoleNameByUserID(int userId)
+        {
+            _connection.Open();
+            string Role = "";
+            string query = "SELECT RoleType FROM [dbo].[Role] INNER JOIN [dbo].[UserRole] ON [dbo].[UserRole].RoleID = [dbo].[Role].ID Where [dbo].[UserRole].UserID = @UserID";
+            using (SqlCommand command = new SqlCommand(query, _connection))
+            {
+                try
+                {
+                    command.Parameters.AddWithValue("@UserID", userId);
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Role = reader.GetString(1);
+                    }
+                }
+                catch (Exception e)
+                {
+                    _connection.Close();
+                    throw e;
+                }
+            }
+            _connection.Close();
+            return Role;
+        }
+
         public User getUserByEmail(string email)
         {
             _connection.Open();
-            User user = new User();
+            User? user = null;
 
             string query = "SELECT usr.ID, FirstName, LastName,ContactDetails.ID, PhoneNumber, Email FROM [dbo].[User] as usr INNER JOIN ContactDetails ON ContactDetails.Email=@Email AND ContactDetails.ID = usr.ContactID";
             using (SqlCommand command = new SqlCommand(query, _connection))
@@ -77,16 +87,6 @@ namespace DataAccess
             }
             _connection.Close();
             return user;
-        }
-
-        public Task<IList<System.Security.Claims.Claim>> getUserClaims(IdentityUser user)
-        {
-            return _userManager.GetClaimsAsync(user);
-        }
-
-        public Task<IList<string>> getUserRoles(IdentityUser user)
-        {
-            return _userManager.GetRolesAsync(user);
         }
 
         public int InsertContactsAndGetPrimaryKey(ContactDetails contactDetails)
@@ -140,6 +140,7 @@ namespace DataAccess
                 }
             }
         }
+
         public int InsertUserAndGetPrimaryKey(User user)
         {
             _connection.Open();
@@ -167,13 +168,6 @@ namespace DataAccess
                 }
                 finally { _connection.Close(); }
             }
-        }
-
-        public async Task<IdentityResult> RegisterIdentityUser(IdentityUser applicationUser, string password, string role)
-        {
-            var result = await _userManager.CreateAsync(applicationUser, password);
-            await _userManager.AddToRoleAsync(applicationUser, role);
-            return result;
         }
     }
 }

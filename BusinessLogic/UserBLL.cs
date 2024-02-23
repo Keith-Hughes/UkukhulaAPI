@@ -1,16 +1,15 @@
-﻿
-using BusinessLogic.Models;
+﻿using BusinessLogic.Models;
 using BusinessLogic.Models.Response;
 using DataAccess;
 using DataAccess.Entity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Transactions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+
 
 namespace BusinessLogic
 {
@@ -18,6 +17,7 @@ namespace BusinessLogic
     {
         private UserDAL _userDAL;
         private IConfiguration _configuration;
+
         public UserBLL(UserDAL userDAL, IConfiguration configuration)
         {
             _configuration = configuration;
@@ -27,44 +27,39 @@ namespace BusinessLogic
 
         public async Task<UserManagerResponse> LoginUserAsync(Login model)
         {
-            var user = await _userDAL.checkUserByEmail(model.Email);
-            if (user == null)
-            {
-                return new UserManagerResponse
-                {
-                    Message = "There is no user with that Email Address",
-                    isSuccess = false,
-                };
+
+            User user =_userDAL.getUserByEmail(model.Email);
+
+            if (user == null) { 
+             UserManagerResponse response = new UserManagerResponse
+             {
+                 Message = $"No user found with email:{model.Email}",
+                 isSuccess = false,
+                 
+             };
+
+                return response;
+
             }
 
-            bool result = await _userDAL.checkUserPassword(user, model.Password);
+            string RoleName = _userDAL.getRoleNameByUserID(user.ID);
 
-            if (result == false)
-            {
-                return new UserManagerResponse
-                {
-                    Message = "Incorrect Password",
-                    isSuccess = false,
-                };
-            }
-            
+
+
             Claim[] claims = new[]
             {
-                
                 new Claim("Email", model.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
-                
+                new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
+                new Claim(ClaimTypes.Role, RoleName)
             };
-            var roles = await _userDAL.getUserRoles(user);
-            var claimsWithRoles = roles.Select(role => new Claim(ClaimTypes.Role, role));
-            var allClaims = claims.Concat(claimsWithRoles);
+            
 
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]));
 
             JwtSecurityToken token = new JwtSecurityToken(
                 issuer: _configuration["AuthSettings:Issuer"],
                 audience: _configuration["AuthSettings:Audience"],
-                claims: allClaims,
+                claims: claims,
                 expires: DateTime.Now.AddMinutes(5),
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
 
@@ -74,98 +69,57 @@ namespace BusinessLogic
             {
                 Message = tokenString,
                 isSuccess = true,
-                ExpireDate = token.ValidTo
+                ExpireDate = token.ValidTo,
+                Id = user.ID,
+                Role = RoleName
+                
             };
         }
 
         public UserManagerResponse ProcessRegistration(Register model)
         {
-            if(model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            if(model.Password != model.ConfirmPassword)
+            if (model == null)
             {
                 return new UserManagerResponse
                 {
-                    Message = "Passwords do not match",
+                    Message = "Unable to register user, no information provided",
                     isSuccess = false
                 };
+              
             }
 
-            var applicationUser = new IdentityUser
-            {
-                Email = model.Email,
-                UserName = model.Email,
-                PhoneNumber = model.PhoneNumber,
-                
-            };
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))//Need to add option to identify async functions
-            {
-                try {
-                    IdentityResult result = _userDAL.RegisterIdentityUser(applicationUser, model.Password, model.Role).Result;
-
-                    if (result.Succeeded)
-                    {
-                        ContactDetails contacts = new ContactDetails
-                        {
-                            Email = model.Email,
-                            PhoneNumber = model.PhoneNumber,
-                        };
-                        int contactId = _userDAL.InsertContactsAndGetPrimaryKey(contacts);
-
-                        User user = new User
-                        {
-                            ContactID = contactId,
-                            FirstName = model.FirstName,
-                            LastName = model.LastName,
-                        };
-                        int userId = _userDAL.InsertUserAndGetPrimaryKey(user);
-
-                        _userDAL.InsertToUserRole(userId, model.Role);
-
-
-
-
-                        scope.Complete();
-                        return new UserManagerResponse
-                        {
-                            Message = $"User created\nDetails:\nUsername: {model.Email}",
-                            isSuccess = true
-                        };
-                    }
-                    return new UserManagerResponse
-                    {
-                        Message = "User not created",
-                        isSuccess = false,
-                        Errors = result.Errors.FirstOrDefault().Description
-                    };
-                }
-                catch (TransactionAbortedException ex)
+                using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))//Need to add option to identify async functions
                 {
+                    ContactDetails contacts = new ContactDetails
+                    {
+                        Email = model.Email,
+                        PhoneNumber = model.PhoneNumber,
+                    };
+                    int contactId = _userDAL.InsertContactsAndGetPrimaryKey(contacts);
 
-                    Console.WriteLine(ex.Message);
+                    User user = new User
+                    {
+                        ContactID = contactId,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                    };
+                    int userId = _userDAL.InsertUserAndGetPrimaryKey(user);
+
+                    _userDAL.InsertToUserRole(userId, model.Role);
+
+                    scope.Complete();
                     return new UserManagerResponse
                     {
-                        Message = "User not created",
-                        isSuccess = false,
-                        Errors = ex.Message
+                        Message = $"User created. Username: {model.Email}",
+                        isSuccess = true
                     };
                 }
-
-                
-
             }
-
-
             
-        }
 
         public async Task<User> getUser(string email)
         {
             return _userDAL.getUserByEmail(email);
-
         }
     }
 }

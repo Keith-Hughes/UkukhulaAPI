@@ -1,5 +1,6 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Models;
+using BusinessLogic.Models.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BursaryManagementAPI.Controllers
@@ -23,7 +24,7 @@ namespace BursaryManagementAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _userManager.LoginUserAsync(model);
+                UserManagerResponse result = await _userManager.LoginUserAsync(model);
                 if (result.isSuccess)
                 {
                     return Ok(result);
