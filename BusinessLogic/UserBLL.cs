@@ -65,7 +65,7 @@ namespace BusinessLogic
                 issuer: _configuration["AuthSettings:Issuer"],
                 audience: _configuration["AuthSettings:Audience"],
                 claims: allClaims,
-                expires: DateTime.Now.AddDays(30),
+                expires: DateTime.Now.AddMinutes(5),
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
 
             string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
