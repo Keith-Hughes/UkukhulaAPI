@@ -61,7 +61,8 @@ public class UniversityDAL(SqlConnection connection)
     public void allocate()
     {
         SwitchConnection(true);
-        List<int> universityIDs = GetUniversities().Select(u => u.GetID()).Where(u => u.s).ToList();
+        
+        List<int> universityIDs = GetUniversities().Where(u => u.Status == "ACTIVE").Select(u => u.GetID()).ToList();
         int numberOfInstitutions = universityIDs.Count();
         BBDAllocation? allocation = GetBBDAllocationByYear(DateTime.Now.Year);
         if (allocation == null)
