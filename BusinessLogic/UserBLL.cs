@@ -44,6 +44,9 @@ namespace BusinessLogic
 
             string RoleName = _userDAL.getRoleNameByUserID(user.ID);
 
+            if (RoleName == Roles.UniversityAdmin) { 
+                _userDAL.getUniverstityIdForUser(user.ID);
+            }
 
 
             Claim[] claims = new[]

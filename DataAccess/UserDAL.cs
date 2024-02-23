@@ -1,5 +1,6 @@
 ﻿using DataAccess.Entity;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace DataAccess
 {
@@ -43,7 +44,7 @@ namespace DataAccess
                     SqlDataReader reader = command.ExecuteReader();
                     while (reader.Read())
                     {
-                        Role = reader.GetString(1);
+                        Role = reader.GetString(0);
                     }
                 }
                 catch (Exception e)
@@ -54,6 +55,28 @@ namespace DataAccess
             }
             _connection.Close();
             return Role;
+        }
+
+        public int getUniverstityIdForUser(int userId)
+        {
+            _connection.Open();
+            int UniversityID = 0;
+            string query = "SELECT ID FROM [dbo].[University] INNER JOIN [dbo].[UniversityUser] ON [dbo].[UniversityUser].UniversityID = [dbo].[University].ID Where [dbo].[UniversityUser].UserID = @UserID";
+            using (SqlCommand command = new SqlCommand(query, _connection))
+            {
+                try
+                {
+                    command.Parameters.AddWithValue("@UserID", userId);
+                    UniversityID = (int)command.ExecuteScalar();
+                }
+                catch (Exception e)
+                {
+                    _connection.Close();
+                    throw e;
+                }
+            }
+            _connection.Close();
+            return UniversityID;
         }
 
         public User getUserByEmail(string email)
