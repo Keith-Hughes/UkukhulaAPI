@@ -1,4 +1,5 @@
-﻿using BusinessLogic;
+﻿
+using BusinessLogic;
 using DataAccess;
 using Azure.Storage.Blobs;
 using Microsoft.OpenApi.Models;
@@ -68,7 +69,6 @@ public class Startup
                 ValidateIssuerSigningKey = true,
             };
         });
-        Console.WriteLine(Encoding.UTF8.GetBytes(Configuration["AuthSettings:Key"]));
         services.AddAuthorization(options =>
         {
             options.AddPolicy("RequireAdminRole", policy =>
