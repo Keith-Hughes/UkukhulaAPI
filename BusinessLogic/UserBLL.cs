@@ -44,9 +44,7 @@ namespace BusinessLogic
 
             string RoleName = _userDAL.getRoleNameByUserID(user.ID);
 
-            if (RoleName == Roles.UniversityAdmin) { 
-                _userDAL.getUniverstityIdForUser(user.ID);
-            }
+         
 
 
             Claim[] claims = new[]
@@ -67,14 +65,20 @@ namespace BusinessLogic
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
 
             string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            int UniversityID = 0;
 
+            if (RoleName == Roles.UniversityAdmin)
+            {
+                UniversityID = _userDAL.getUniverstityIdForUser(user.ID);
+            }
             return new UserManagerResponse
             {
                 Message = tokenString,
                 isSuccess = true,
                 ExpireDate = token.ValidTo,
                 Id = user.ID,
-                Role = RoleName
+                Role = RoleName,
+                UniversityID = UniversityID,
                 
             };
         }

@@ -31,7 +31,7 @@ namespace BusinessLogic
             }
         }
 
-        public void Create(Models.CreateStudentFundRequestForNewStudent newRequest)
+        public UserManagerResponse Create(Models.CreateStudentFundRequestForNewStudent newRequest)
         {
             if (newRequest != null)
 
@@ -102,19 +102,38 @@ namespace BusinessLogic
                             };
 
                             _repository.Create(dataAccessModel);
+
                             scope.Complete();
+                            return new UserManagerResponse
+                            {
+                                UniversityID = newRequest.UniversityID,
+                                Message = "Successfully Submited Student Request For "+newRequest.FirstName,
+                                isSuccess = true,
+                            };
 
                         }
                     }
                 }
 
-                catch (TransactionAbortedException ex)
+                catch (Exception ex)
                 {
+                    return new UserManagerResponse
+                    {
+                        UniversityID = newRequest.UniversityID,
+                        Message = "Error creating student fund request" + ex.Message,
+                        isSuccess = false,
+                    };
                     throw new Exception("Error creating student fund request" + ex.Message);
                 }
 
             else
-                throw new ArgumentNullException(nameof(newRequest));
+                return new UserManagerResponse
+                {
+                    UniversityID = newRequest.UniversityID,
+                    Message = new ArgumentNullException(nameof(newRequest)).Message,
+                    isSuccess = false,
+                };
+            
         }
 
         public void CreateForExistingStudent(Models.ExistingStudent newRequest)

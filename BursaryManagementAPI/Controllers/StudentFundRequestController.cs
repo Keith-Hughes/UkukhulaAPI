@@ -1,11 +1,9 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Models;
+using BusinessLogic.Models.Response;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
+
 
 namespace BursaryManagementAPI.Controllers
 {   
@@ -39,6 +37,7 @@ namespace BursaryManagementAPI.Controllers
         [HttpPost("create")]
         public ActionResult Create([FromBody] CreateStudentFundRequestForNewStudent newRequest)
         {
+           
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -46,9 +45,13 @@ namespace BursaryManagementAPI.Controllers
 
             try
             {
-                
-                _StudentFundRequestBLL.Create(newRequest);
-                return Ok("Student fund request created successfully!");
+                UserManagerResponse userResponse = _StudentFundRequestBLL.Create(newRequest);
+                if(!userResponse.isSuccess)
+                {
+                    return BadRequest(userResponse);
+                }
+
+                return Ok(userResponse);
             }
             catch (Exception ex)
             {
