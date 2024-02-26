@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using System.Text;
 using System.Transactions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 
