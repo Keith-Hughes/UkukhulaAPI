@@ -83,7 +83,7 @@ namespace BusinessLogic
             };
         }
 
-        public UserManagerResponse ProcessRegistration(Register model)
+        public UserManagerResponse ProcessRegistration(Register model,int UniversityID)
         {
             if (model == null)
             {
@@ -116,7 +116,7 @@ namespace BusinessLogic
 
                     //should insert into university user when neccesary
                     if (model.Role =="University Admin"){
-                        //insert to 
+                    _userDAL.insertIntoUniversityUser(UniversityID,userId);
                     }else{
                         //insert to
                     }

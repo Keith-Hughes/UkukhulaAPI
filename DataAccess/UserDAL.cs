@@ -140,6 +140,28 @@ namespace DataAccess
                 finally { _connection.Close(); }
             }
         }
+        public int insertIntoUniversityUser(int universityID,int userId){
+            _connection.Open();
+            string query = "INSERT INTO [dbo].[UniversityUser] (UniversityID, UserID) VALUES (@UniversityID, @UserID)";
+            using (SqlCommand command = new SqlCommand(query, _connection))
+            {
+                try
+                {
+                    command.Parameters.AddWithValue("@UniversityID", universityID);
+                    command.Parameters.AddWithValue("@UserID", userId);
+                    int rowsAffected = command.ExecuteNonQuery();
+                    _connection.Close();
+                    return rowsAffected;
+                }
+                catch (Exception ex)
+                {
+                    _connection.Close();
+                    Console.WriteLine($"Unable to add University User: {ex.Message}");
+                    return 0;
+                }
+            }
+
+        }
 
         public int InsertToUserRole(int UserId, string RoleName)
         {

@@ -36,11 +36,11 @@ namespace BursaryManagementAPI.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] Register model)
+        public async Task<IActionResult> RegisterAsync([FromBody] Register model, int? universityID = 0)
         {
             if (ModelState.IsValid)
             {
-                var result = _userManager.ProcessRegistration(model);
+                var result = _userManager.ProcessRegistration(model ,universityID ?? 0);
                 if (result.isSuccess)
                 {
                     return Ok(result);
