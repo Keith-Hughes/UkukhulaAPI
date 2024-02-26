@@ -114,6 +114,14 @@ namespace BusinessLogic
 
                     _userDAL.InsertToUserRole(userId, model.Role);
 
+                    //should insert into university user when neccesary
+                    if (model.Role =="University Admin"){
+                        //insert to 
+                    }else{
+                        //insert to
+                    }
+
+
                     scope.Complete();
                     return new UserManagerResponse
                     {

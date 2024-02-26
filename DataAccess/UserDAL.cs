@@ -109,6 +109,7 @@ namespace DataAccess
                 }
             }
             _connection.Close();
+            Console.WriteLine(user);
             return user;
         }
 
