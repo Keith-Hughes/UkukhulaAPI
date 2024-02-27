@@ -45,7 +45,8 @@ public class UniversityDAL(SqlConnection connection)
             University university = new(
                         _id: reader.GetInt32(0),
                        _name: reader.GetString(1),
-                       _provinceID: reader.GetInt32(2)
+                       _provinceID: reader.GetInt32(2),
+                       _status:reader.GetString(3)
                        );
 
             universities.Add(university);

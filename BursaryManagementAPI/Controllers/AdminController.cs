@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BursaryManagementAPI.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class AdminController(AdminBLL adminBLL) : ControllerBase
     {
@@ -17,7 +17,7 @@ namespace BursaryManagementAPI.Controllers
 
         [Route("GetAllUniversityRequests")]
         [HttpGet]
-        [Authorize(Roles = Roles.BBDAdmin)]
+       // [Authorize(Roles = Roles.BBDAdmin)]
         public ActionResult<IEnumerable<UniversityRequest>> Get()
         {
            
@@ -44,6 +44,19 @@ namespace BursaryManagementAPI.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+        }
+
+        [Route("GetAllUniversities")]
+        [HttpGet]
+        [Authorize(Roles = Roles.BBDAdmin)]
+        public ActionResult<IEnumerable<University>> GetAllUniversities() {
+            try { 
+                return Ok(_adminBLL.GetAllUniversityDetails());
+            }catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        
         }
 
         [Route("allocateBuget")]
