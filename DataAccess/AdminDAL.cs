@@ -54,6 +54,43 @@ namespace DataAccess
             }
         }
 
+        public List<University> GetUniversities()
+        {
+            try
+            {
+                _connection.Open();
+            List<University> universities = new List<University>();
+            string query = "SELECT * FROM University";
+            SqlDataReader reader = new SqlCommand(query, _connection).ExecuteReader();
+            while (reader.Read())
+            {
+                University university = new(
+                            _id: reader.GetInt32(0),
+                           _name: reader.GetString(1),
+                           _provinceID: reader.GetInt32(2),
+                           _status:reader.GetString(3)
+                           );
+
+                universities.Add(university);
+            }
+
+
+            reader.Close();
+            _connection.Close();
+
+            return universities;
+        }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting university requests connection problems{ex.Message}/n {ex.StackTrace}");
+    }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
+
         public UniversityRequest? UpdateUniversityFundRequest(int requestID, int statusID)
         {
             try

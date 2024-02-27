@@ -20,12 +20,12 @@ namespace DataAccess.Entity
             
 
         }
-        public University(int _id, string _name, int _provinceID)
+        public University(int _id, string _name, int _provinceID, string _status)
         {
             ID = _id;
             Name = _name;
             ProvinceID = _provinceID;
-
+            Status = _status;
         }
 
         public int GetID() => ID;
