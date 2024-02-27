@@ -74,7 +74,6 @@ namespace DataAccess
                 universities.Add(university);
             }
 
-
             reader.Close();
             _connection.Close();
 
@@ -121,7 +120,7 @@ namespace DataAccess
             }
             catch (Exception ex)
             {
-                throw new Exception("Error updating university fund request connection problems");
+                throw new Exception("Error updating university fund request connection problems: ");
             }
             finally
             {

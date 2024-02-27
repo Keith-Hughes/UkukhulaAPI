@@ -10,15 +10,14 @@ namespace DataAccess.Entity
         public int ProvinceID { get; set; }
 
         [AllowedValues("INACTIVE","ACTIVE")]
-        public string? Status { get; set; }
+        public string Status { get; set; }
         
         
-        public University(string name, int provinceID)
+        public University(string name, int provinceID, string status)
         {
             Name = name;
             ProvinceID = provinceID;
-            
-
+            Status = status;
         }
         public University(int _id, string _name, int _provinceID, string _status)
         {
