@@ -2,14 +2,15 @@
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DataAccess
 {
-    public class StudentFundRequestDAL
+    public class StudentFundRequestDAL : ConnectionHelper
     {
         private readonly SqlConnection _connection;
 
-        public StudentFundRequestDAL(SqlConnection connection)
+        public StudentFundRequestDAL(SqlConnection connection ): base( connection )
         {
             _connection = connection;
         }
@@ -18,7 +19,7 @@ namespace DataAccess
         {
             try
             {
-                _connection.Open();
+                SwitchConnection(true);
                 List<StudentFundRequest> requests = new List<StudentFundRequest>();
                 string query = "EXEC [dbo].[GetStudentFundRequests]";
                 using (SqlCommand command = new SqlCommand(query, _connection))
@@ -49,12 +50,12 @@ namespace DataAccess
                         requests.Add(request);
                     }
                 }
-                _connection.Close();
+                SwitchConnection(false);
                 return requests;
             }
             finally
             {
-                _connection.Close();
+                SwitchConnection(false);
             }
         }
 
@@ -62,7 +63,7 @@ namespace DataAccess
         {
             try
             {
-                _connection.Open();
+                SwitchConnection(true);
 
                 string query = "EXEC [dbo].[CreateStudentFundRequestForNewStudent] @IDNumber,@GenderName,@RaceName,@UniversityID,@BirthDate,@Grade,@Amount,@UserID";
                 using (SqlCommand command = new SqlCommand(query, _connection))
@@ -81,12 +82,12 @@ namespace DataAccess
             }
             catch(Exception e)
             {
-                
+                SwitchConnection(false);
                 Console.WriteLine($"This is the catch: {e.Message}\n This is stackTrace: {e.StackTrace}");
             }
             finally
             {
-                _connection.Close();
+                SwitchConnection(false);
             }
         }
 
@@ -94,7 +95,7 @@ namespace DataAccess
         {
             try
             {
-                _connection.Open();
+                SwitchConnection(true);
                 string query = "INSERT INTO [dbo].[StudentFundRequest] ([Grade], [Amount], [Comment], [StudentID], [StatusID])VALUES (@Grade, @Amount, '', @StudentID, 3)";
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
@@ -103,12 +104,12 @@ namespace DataAccess
                     command.Parameters.AddWithValue("@Amount", newRequest.Amount);
 
                     command.ExecuteNonQuery();
-                    _connection.Close();
+                    SwitchConnection(false);
                 }
             }
             finally
             {
-                _connection.Close();
+                SwitchConnection(false);
             }
         }
 
@@ -116,7 +117,7 @@ namespace DataAccess
         {
             try
             {
-                _connection.Open();
+                SwitchConnection(true);
                 string query = "UPDATE StudentFundRequest SET Grade = @Grade, Amount = @Amount WHERE ID = @ID AND StatusID = 3";
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
@@ -127,14 +128,14 @@ namespace DataAccess
                     int rowsAffected = command.ExecuteNonQuery();
                     if (rowsAffected == 0)
                     {   
-                        _connection.Close() ;
+                        SwitchConnection(false) ;
                         throw new KeyNotFoundException("Student fund request not found!");
                     }
                 }
             }
             finally
             {
-                _connection.Close();
+                SwitchConnection(false);
             }
         }
 
@@ -142,8 +143,7 @@ namespace DataAccess
         {
             try
             {
-                _connection.Open();
-
+                SwitchConnection(true);
                 if (status == 2 && string.IsNullOrWhiteSpace(comment))
                 {
                     throw new ArgumentException("A comment is required when changing the status to 2.");
@@ -171,12 +171,24 @@ namespace DataAccess
                     }
 
                     command.ExecuteNonQuery();
-                    _connection.Close ();
+                    StudentFundRequest studentFundRequestDetails = GetAllRequests().ToList<StudentFundRequest>().First(request => request.ID == applicationId);
+
+                    SwitchConnection(false);
                 }
+                
             }
+            catch(SqlException ex)
+            {
+                SwitchConnection(false);
+                throw ex.InnerException;
+
+            }
+            
+
+            
             finally
             {
-                _connection.Close();
+                SwitchConnection(false);
             }
         }
     }
