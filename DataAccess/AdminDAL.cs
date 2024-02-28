@@ -31,7 +31,7 @@ namespace DataAccess
                     while (reader.Read())
                     {
                         UniversityRequest universityRequest = new UniversityRequest(
-                                        reader.GetInt64(0),
+                                        reader.GetInt32(0),
                                         reader.GetString(1),
                                         reader.GetString(2),
                                         reader.GetDecimal(3),
@@ -107,12 +107,13 @@ namespace DataAccess
                         while (reader.Read())
                         {
                             request = new UniversityRequest(
-                                                           reader.GetString(0),
+                                                           reader.GetInt32(0),
                                                            reader.GetString(1),
-                                                           reader.GetDecimal(2),
-                                                           reader.GetString(3),
-                                                           reader.GetDateTime(4),
-                                                           reader.GetString(5)
+                                                           reader.GetString(2),
+                                                           reader.GetDecimal(3),
+                                                           reader.GetString(4),
+                                                           reader.GetDateTime(5),
+                                                           reader.GetString(6)
                                                            );
                         }
                     }
@@ -146,12 +147,13 @@ namespace DataAccess
                         while (reader.Read())
                         {
                             request = new UniversityRequest(
-                                        reader.GetString(0),
+                                        reader.GetInt32(0),
                                         reader.GetString(1),
-                                        reader.GetDecimal(2),
-                                        reader.GetString(3),
-                                        reader.GetDateTime(4),
-                                        reader.GetString(5)
+                                        reader.GetString(2),
+                                        reader.GetDecimal(3),
+                                        reader.GetString(4),
+                                        reader.GetDateTime(5),
+                                        reader.GetString(6)
                                         );
                         }
                     }
