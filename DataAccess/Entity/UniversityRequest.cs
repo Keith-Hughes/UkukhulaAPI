@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Entity
 {
-    public class UniversityRequest(string university, string province, decimal amount, string status, DateTime dateCreated, string comment)
+    public class UniversityRequest(int RequestID, string university, string province, decimal amount, string status, DateTime dateCreated, string comment)
     {
         /*
         University.[Name] AS University, 
@@ -16,7 +16,7 @@ namespace DataAccess.Entity
         UniversityFundRequest.DateCreated,
         UniversityFundRequest.Comment
          */
-
+        public int RequestID { get; set; } = RequestID;
         public string University { get; set; } = university;
         public string Province { get; set; } = province;
         public decimal Amount { get; set; } = amount;

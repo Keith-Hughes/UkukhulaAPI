@@ -1,5 +1,6 @@
 ﻿using DataAccess.Entity;
 using Microsoft.Data.SqlClient;
+using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +11,7 @@ namespace DataAccess
     {
         private readonly SqlConnection _connection;
 
-        public StudentFundRequestDAL(SqlConnection connection ): base( connection )
+        public StudentFundRequestDAL(SqlConnection connection) : base(connection)
         {
             _connection = connection;
         }
@@ -80,7 +81,7 @@ namespace DataAccess
                     command.ExecuteNonQuery();
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 SwitchConnection(false);
                 Console.WriteLine($"This is the catch: {e.Message}\n This is stackTrace: {e.StackTrace}");
@@ -127,8 +128,8 @@ namespace DataAccess
 
                     int rowsAffected = command.ExecuteNonQuery();
                     if (rowsAffected == 0)
-                    {   
-                        SwitchConnection(false) ;
+                    {
+                        SwitchConnection(false);
                         throw new KeyNotFoundException("Student fund request not found!");
                     }
                 }
@@ -139,14 +140,18 @@ namespace DataAccess
             }
         }
 
-        public void UpdateApplicationStatus(int applicationId, int status, string comment)
+        public StudentFundRequest UpdateApplicationStatus(int applicationId, int status, string comment)
         {
             try
             {
                 SwitchConnection(true);
                 if (status == 2 && string.IsNullOrWhiteSpace(comment))
                 {
-                    throw new ArgumentException("A comment is required when changing the status to 2.");
+                    return new StudentFundRequest
+                    {
+                        ID = 0,
+                        Comment = "A comment is required when changing the status to Rejected."
+                    };
                 }
 
                 string query;
@@ -171,21 +176,21 @@ namespace DataAccess
                     }
 
                     command.ExecuteNonQuery();
-                    StudentFundRequest studentFundRequestDetails = GetAllRequests().ToList<StudentFundRequest>().First(request => request.ID == applicationId);
+                     StudentFundRequest studentFundRequestDetails = GetAllRequests().ToList().First(request => request.ID == applicationId);
 
                     SwitchConnection(false);
+                    return studentFundRequestDetails;
                 }
-                
             }
-            catch(SqlException ex)
+            catch (SqlException ex)
             {
                 SwitchConnection(false);
-                throw ex.InnerException;
-
+                return new StudentFundRequest
+                {
+                    ID = 0,
+                    Comment = ex.Message
+                };
             }
-            
-
-            
             finally
             {
                 SwitchConnection(false);

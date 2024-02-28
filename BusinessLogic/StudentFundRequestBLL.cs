@@ -6,6 +6,7 @@ using System.Net;
 using BusinessLogic.Models.Response;
 using Microsoft.AspNetCore.Identity;
 using System.Transactions;
+using Shared.Models;
 
 namespace BusinessLogic
 {
@@ -23,7 +24,7 @@ namespace BusinessLogic
         {
             try
             {
-                return _repository.GetAllRequests();
+                return (IEnumerable<StudentFundRequest>)_repository.GetAllRequests();
             }
             catch (Exception ex)
             {
@@ -179,11 +180,11 @@ namespace BusinessLogic
             }
         }
 
-        public void ApproveApplication(int applicationId)
+        public StudentFundRequest ApproveApplication(int applicationId)
         {
             try
             {
-                _repository.UpdateApplicationStatus(applicationId, 1, "");
+                return _repository.UpdateApplicationStatus(applicationId, 1, "");
             }
             catch (Exception ex)
             {
@@ -191,11 +192,11 @@ namespace BusinessLogic
             }
         }
 
-        public void RejectApplication(int applicationId, string comment)
+        public StudentFundRequest RejectApplication(int applicationId, string comment)
         {
             try
             {
-                _repository.UpdateApplicationStatus(applicationId, 2, comment);
+                return _repository.UpdateApplicationStatus(applicationId, 2, comment);
             }
             catch (Exception ex)
             {

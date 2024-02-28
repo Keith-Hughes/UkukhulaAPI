@@ -1,4 +1,4 @@
-﻿namespace BusinessLogic.Models
+﻿namespace Shared.Models
 {
     public class StudentFundRequest
     {
@@ -19,8 +19,6 @@
         public string FundRequestStatus { get; set; }
         public string DocumentStatus { get; set; }
         public string Comment { get; set; }
-
     }
-    
 
 }

@@ -3,6 +3,7 @@ using BusinessLogic.Models;
 using BusinessLogic.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Models;
 
 
 namespace BursaryManagementAPI.Controllers
@@ -107,8 +108,13 @@ namespace BursaryManagementAPI.Controllers
         {
             try
             {
-                _StudentFundRequestBLL.ApproveApplication(applicationId);
-                return Ok("Application approved successfully!");
+                StudentFundRequest request = _StudentFundRequestBLL.ApproveApplication(applicationId);
+                if(request.ID == 0)
+                {
+                    return BadRequest(request);
+                }
+                else
+                return Ok(request);
             }
             catch (Exception ex)
             {
@@ -122,8 +128,13 @@ namespace BursaryManagementAPI.Controllers
         {
             try
             {
-                _StudentFundRequestBLL.RejectApplication(applicationId, comment);
-                return Ok("Application rejected successfully!");
+                StudentFundRequest request = _StudentFundRequestBLL.RejectApplication(applicationId, comment);
+                if (request.ID == 0)
+                {
+                    return BadRequest(request);
+                }
+                else
+                    return Ok(request);
             }
             catch (Exception ex)
             {

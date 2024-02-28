@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessLogic", "BusinessLo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{FE069FFD-6B9B-401B-9CA0-DCBE3B9A1A1E}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{3B02B3DD-3D59-4951-B283-3938C1D3AF42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,5 +35,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D6E113E1-34A3-407C-8465-3E9754E53486}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Shared\Shared.projitems*{3b02b3dd-3d59-4951-b283-3938c1d3af42}*SharedItemsImports = 13
+		Shared\Shared.projitems*{fe069ffd-6b9b-401b-9ca0-dcbe3b9a1a1e}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
