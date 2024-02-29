@@ -7,18 +7,18 @@ using Shared.Models;
 
 
 namespace BursaryManagementAPI.Controllers
-{   
+{
     [Route("api/[controller]")]
     [ApiController]
     public class StudentFundRequestController : ControllerBase
     {
         private readonly StudentFundRequestBLL _StudentFundRequestBLL;
-        
+
 
         public StudentFundRequestController(StudentFundRequestBLL StudentFundRequestBLL)
         {
             _StudentFundRequestBLL = StudentFundRequestBLL;
-            
+
         }
 
         [HttpGet]
@@ -38,7 +38,7 @@ namespace BursaryManagementAPI.Controllers
         [HttpPost("create")]
         public ActionResult Create([FromBody] CreateStudentFundRequestForNewStudent newRequest)
         {
-           
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -47,7 +47,7 @@ namespace BursaryManagementAPI.Controllers
             try
             {
                 UserManagerResponse userResponse = _StudentFundRequestBLL.Create(newRequest);
-                if(!userResponse.isSuccess)
+                if (!userResponse.isSuccess)
                 {
                     return BadRequest(userResponse);
                 }
@@ -109,18 +109,37 @@ namespace BursaryManagementAPI.Controllers
             try
             {
                 StudentFundRequest request = _StudentFundRequestBLL.ApproveApplication(applicationId);
-                if(request.ID == 0)
+                if (request.ID == 0)
                 {
                     return BadRequest(request);
                 }
                 else
-                return Ok(request);
+                    return Ok(request);
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error approving application: {ex.Message}");
             }
         }
+
+        
+        [Authorize(Roles = Roles.BBDAdmin+","+Roles.UniversityAdmin)]
+       
+        [HttpGet("get/{universityId}")]
+        public ActionResult<IEnumerable<StudentFundRequest>> getByUniversity(int universityId) 
+        { 
+            if(ModelState.IsValid) 
+            { 
+                IEnumerable<StudentFundRequest> allRequests=  _StudentFundRequestBLL.GetStudentFundRequestsByUniversity(universityId);
+                if (allRequests.Any())
+                {
+                    return Ok(allRequests);
+                };
+                return Ok("{Message: No Requests Found}");
+            }
+            return BadRequest("{Message: Unable to retrieve your requests}");
+        }
+
 
         [Authorize(Roles = Roles.BBDAdmin)]
         [HttpPost("{applicationId}/reject")]

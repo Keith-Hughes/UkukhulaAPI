@@ -4,6 +4,7 @@ using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace DataAccess
 {
@@ -52,7 +53,57 @@ namespace DataAccess
                     }
                 }
                 SwitchConnection(false);
+                
                 return requests;
+            }
+            finally
+            {
+                SwitchConnection(false);
+            }
+        }
+
+        public IEnumerable<StudentFundRequest> GetStudentFundRequestsByUniversity(int universityId)
+        {
+            try
+            {
+                SwitchConnection(true);
+                List<StudentFundRequest> requests = new List<StudentFundRequest>();
+                string query = "EXEC [dbo].[GetStudentFundRequestsByUniversity] @UniversityID";
+                using (SqlCommand command = new SqlCommand(query, _connection)) {
+                    command.Parameters.AddWithValue("@UniversityID", universityId);
+
+       
+                using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            StudentFundRequest request = new StudentFundRequest
+                            {
+                                ID = reader.GetInt32(reader.GetOrdinal("ID")),
+                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                                UniversityName = reader.GetString(reader.GetOrdinal("UniversityName")),
+                                IDNumber = reader.GetString(reader.GetOrdinal("IDNumber")),
+                                BirthDate = reader.GetDateTime(reader.GetOrdinal("BirthDate")),
+                                Age = reader.GetByte(reader.GetOrdinal("Age")),
+                                GenderName = reader.GetString(reader.GetOrdinal("GenderName")),
+                                Email = reader.GetString(reader.GetOrdinal("Email")),
+                                PhoneNumber = reader.GetString(reader.GetOrdinal("PhoneNumber")),
+                                RaceName = reader.GetString(reader.GetOrdinal("RaceName")),
+                                Grade = reader.GetByte(reader.GetOrdinal("Grade")),
+                                Amount = reader.GetDecimal(reader.GetOrdinal("Amount")),
+                                RequestCreatedDate = reader.GetDateTime(reader.GetOrdinal("RequestCreatedDate")),
+                                FundRequestStatus = reader.GetString(reader.GetOrdinal("FundRequestStatus")),
+                                DocumentStatus = reader.GetString(reader.GetOrdinal("DocumentStatus")),
+                                Comment = reader.IsDBNull(reader.GetOrdinal("Comment")) ? "" : reader.GetString(reader.GetOrdinal("Comment"))
+                            };
+                            requests.Add(request);
+                        }
+                    }
+                    SwitchConnection(false);
+
+                    return requests;
+                }
             }
             finally
             {

@@ -137,6 +137,17 @@ namespace BusinessLogic
             
         }
 
+        public IEnumerable<StudentFundRequest> GetStudentFundRequestsByUniversity(int universityID)
+        {
+            try
+            {
+                return _repository.GetStudentFundRequestsByUniversity(universityID);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving student fund requests: {ex.Message}");
+            }
+        }
         public void CreateForExistingStudent(Models.ExistingStudent newRequest)
         {
             if (newRequest != null)
