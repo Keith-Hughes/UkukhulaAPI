@@ -25,6 +25,17 @@ namespace BusinessLogic
                 throw new Exception($"Error getting university requests: {ex.Message}");
             }
         }
+        public List<UniversityUser> GetAllUniversityUsers()
+        {
+            try
+            {
+                return  _repository.GetUniversityUsers();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting university Users: {ex.Message}");
+            }
+        }
 
         public IEnumerable<University> GetAllUniversityDetails() {
             try {

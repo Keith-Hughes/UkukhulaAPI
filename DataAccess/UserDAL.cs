@@ -1,14 +1,13 @@
 ﻿using DataAccess.Entity;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using Shared.Models;
 
 namespace DataAccess
 {
     public class UserDAL(SqlConnection connection)
     {
         private readonly SqlConnection _connection = connection;
-
-        //Returns null if no user exists
 
         public int GetRoleIdByName(string roleName)
         {
@@ -26,7 +25,11 @@ namespace DataAccess
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Unable to retirve Role ID: {ex.Message}");
+                    _connection.Close();
                     return 0;
+                }
+                finally{
+                    _connection.Close();
                 }
             }
         }
@@ -57,7 +60,7 @@ namespace DataAccess
             return Role;
         }
 
-        public int getUniverstityIdForUser(int userId)
+          public int getUniverstityIdForUser(int userId)
         {
             _connection.Open();
             int UniversityID = 0;
@@ -84,7 +87,7 @@ namespace DataAccess
             _connection.Open();
             User? user = null;
 
-            string query = "SELECT usr.ID, FirstName, LastName,ContactDetails.ID, PhoneNumber, Email FROM [dbo].[User] as usr INNER JOIN ContactDetails ON ContactDetails.Email=@Email AND ContactDetails.ID = usr.ContactID";
+            string query = "SELECT usr.ID, FirstName, LastName, Status,ContactDetails.ID, PhoneNumber, Email FROM [dbo].[User] as usr INNER JOIN ContactDetails ON ContactDetails.Email=@Email AND ContactDetails.ID = usr.ContactID";
             using (SqlCommand command = new SqlCommand(query, _connection))
             {
                 try
@@ -98,7 +101,8 @@ namespace DataAccess
                             ID = reader.GetInt32(0),
                             FirstName = reader.GetString(1),
                             LastName = reader.GetString(2),
-                            ContactID = reader.GetInt32(3),
+                            Status = reader.GetString(3),
+                            ContactID = reader.GetInt32(4),
                         };
                     }
                 }
@@ -134,8 +138,8 @@ namespace DataAccess
                 catch (Exception ex)
                 {
                     _connection.Close();
-                    Console.WriteLine($"Unable to insert to ContactDetails Table. Details: '{ex.StackTrace}'");
-                    throw ex;
+                    return 0;
+                    // throw ex;
                 }
                 finally { _connection.Close(); }
             }

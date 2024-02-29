@@ -8,14 +8,9 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace DataAccess
 {
-    public class StudentFundRequestDAL : ConnectionHelper
+    public class StudentFundRequestDAL(SqlConnection connection) : ConnectionHelper(connection)
     {
-        private readonly SqlConnection _connection;
-
-        public StudentFundRequestDAL(SqlConnection connection) : base(connection)
-        {
-            _connection = connection;
-        }
+        private readonly SqlConnection _connection = connection;
 
         public IEnumerable<StudentFundRequest> GetAllRequests()
         {

@@ -46,6 +46,22 @@ namespace BursaryManagementAPI.Controllers
             }
         }
 
+        [Route("GetUniversityUsers")]
+        [HttpGet]
+        [Authorize(Roles = Roles.BBDAdmin)]
+        public ActionResult<IEnumerable<AllocationDetails>> GetUniversityUsers()
+        {
+            try
+            {
+                return Ok(_adminBLL.GetAllUniversityUsers());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
         [Route("GetAllUniversities")]
         [HttpGet]
         [Authorize(Roles = Roles.BBDAdmin)]
