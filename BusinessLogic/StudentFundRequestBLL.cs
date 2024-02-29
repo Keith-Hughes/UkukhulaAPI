@@ -52,13 +52,7 @@ namespace BusinessLogic
                             
 
                         };
-                        IdentityUser StudentUser = new IdentityUser
-                        {
-                            Email = newRequest.Email,
-                            UserName = newRequest.Email,
-                            PhoneNumber = newRequest.PhoneNumber,
-                        };
-
+                     
                         if (true)//Check if user Identity has been added successfully
                         {
                             //Create Contacts object and insert to table,

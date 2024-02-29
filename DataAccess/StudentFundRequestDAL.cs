@@ -111,13 +111,34 @@ namespace DataAccess
             }
         }
 
+        public int getUniversityFundAllocationByID(int id)
+        {
+            try
+            {
+                SwitchConnection(true);
+                int UniversityAllocationID = 0;
+                string query = "SELECT ID FROM UniversityFundAllocation WHERE UniversityID=@UniversityID AND YEAR(DateAllocated) = YEAR(GETDATE())";
+                using (SqlCommand command = new SqlCommand(query, _connection))
+                {
+                    command.Parameters.AddWithValue("@UniversityID", id);
+                    UniversityAllocationID = (int)command.ExecuteScalar();
+                    SwitchConnection(false);
+                    return UniversityAllocationID;
+                }
+            }catch(Exception ex)
+            {
+                SwitchConnection(false);
+                return 0;
+            }
+        }
+
         public void Create(CreateStudentFundRequestForNewStudent newRequest)
         {
             try
             {
                 SwitchConnection(true);
 
-                string query = "EXEC [dbo].[CreateStudentFundRequestForNewStudent] @IDNumber,@GenderName,@RaceName,@UniversityID,@BirthDate,@Grade,@Amount,@UserID";
+                string query = "EXEC [dbo].[CreateStudentFundRequestForNewStudent] @IDNumber,@GenderName,@RaceName,@UniversityID,@BirthDate,@Grade,@Amount,@UserID, @UniversityFundID";
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
                     command.Parameters.AddWithValue("@IDNumber", newRequest.IDNumber);
@@ -128,6 +149,7 @@ namespace DataAccess
                     command.Parameters.AddWithValue("@Grade", newRequest.Grade);
                     command.Parameters.AddWithValue("@Amount", newRequest.Amount);
                     command.Parameters.AddWithValue("@UserID", newRequest.UserID);
+                    command.Parameters.AddWithValue("@UniversityFundID", getUniversityFundAllocationByID(newRequest.UniversityID));
 
                     command.ExecuteNonQuery();
                 }
