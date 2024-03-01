@@ -1,16 +1,12 @@
 ﻿using DataAccess.Entity;
 using Microsoft.Data.SqlClient;
 using Shared.Models;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace DataAccess
 {
     public class StudentFundRequestDAL(SqlConnection connection) : ConnectionHelper(connection)
     {
-        private readonly SqlConnection _connection = connection;
+        
 
         public IEnumerable<StudentFundRequest> GetAllRequests()
         {
@@ -46,7 +42,9 @@ namespace DataAccess
                         };
                         requests.Add(request);
                     }
+                    reader.Close();
                 }
+                    
                 SwitchConnection(false);
                 
                 return requests;
@@ -241,14 +239,16 @@ namespace DataAccess
                     }
 
                     command.ExecuteNonQuery();
-                     StudentFundRequest studentFundRequestDetails = GetAllRequests().ToList().First(request => request.ID == applicationId);
 
                     SwitchConnection(false);
+                    StudentFundRequest studentFundRequestDetails = GetAllRequests().ToList().First(request => request.ID == applicationId);
+
                     return studentFundRequestDetails;
                 }
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
+                Console.WriteLine(ex.StackTrace);
                 SwitchConnection(false);
                 return new StudentFundRequest
                 {
