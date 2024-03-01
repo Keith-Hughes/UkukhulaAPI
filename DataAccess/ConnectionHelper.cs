@@ -10,7 +10,7 @@ namespace DataAccess
 {
     public abstract class ConnectionHelper
     {
-        private readonly SqlConnection _connection;
+        protected readonly SqlConnection _connection;
         protected ConnectionHelper(SqlConnection _connection) { 
         this._connection = _connection;
         }

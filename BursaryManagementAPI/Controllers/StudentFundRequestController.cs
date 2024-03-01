@@ -96,7 +96,7 @@ namespace BursaryManagementAPI.Controllers
             }
         }
         [Authorize(Roles = Roles.BBDAdmin)]
-        [HttpPost("{applicationId}/approve")]
+        [HttpPut("{applicationId}/approve")]
         public ActionResult ApproveApplication(int applicationId)
         {
             try
