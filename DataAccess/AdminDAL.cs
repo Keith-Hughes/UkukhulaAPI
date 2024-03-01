@@ -7,11 +7,11 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace DataAccess
 {
-    public class AdminDAL(SqlConnection connection)
+    public class AdminDAL(SqlConnection connection) : ConnectionHelper(connection)
     {
+        
         private readonly SqlConnection _connection = connection;
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace DataAccess
         {
             try
             {
-                _connection.Open();
+                SwitchConnection(true);
                 List<UniversityRequest> requests = new List<UniversityRequest>();
                 string query = "SELECT * FROM [dbo].[vw_UniversityRequests]";
                 using (SqlCommand command = new SqlCommand(query, _connection))
@@ -42,7 +42,7 @@ namespace DataAccess
 
                     }
                 }
-                _connection.Close();
+                SwitchConnection(false);
                 return requests;
             }
             catch (Exception ex)
@@ -51,15 +51,52 @@ namespace DataAccess
             }
             finally
             {
-                _connection.Close();
+                SwitchConnection(false);
             }
+        }
+
+        public List<UniversityUser> GetUniversityUsers()
+        {
+           List<UniversityUser> universityUsers = [];
+            SwitchConnection(true);
+            
+            
+            string query = "SELECT * FROM [dbo].[GetAllUsers]";
+            using (SqlCommand command = new SqlCommand(query, _connection))
+            {
+                try
+                {
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        UniversityUser? universityUser = new UniversityUser
+                        {
+                            UniversityName = reader.GetString(0),
+                            FirstName = reader.GetString(1),
+                            LastName = reader.GetString(2),
+                            PhoneNumber = reader.GetString(3),
+                            Email = reader.GetString(4),
+                            Status = reader.GetString(5),
+                        };
+                        universityUsers.Add(universityUser);
+                    }
+                }
+                catch (Exception e)
+                {
+                    SwitchConnection(false);
+                }
+            }
+            SwitchConnection(false);
+
+            return universityUsers;
+
         }
 
         public List<University> GetUniversities()
         {
             try
             {
-                _connection.Open();
+                SwitchConnection(true);
             List<University> universities = new List<University>();
             string query = "SELECT * FROM University";
             SqlDataReader reader = new SqlCommand(query, _connection).ExecuteReader();
@@ -76,17 +113,18 @@ namespace DataAccess
             }
 
             reader.Close();
-            _connection.Close();
+            SwitchConnection(false);
 
             return universities;
         }
             catch (Exception ex)
             {
+                SwitchConnection(false);
                 throw new Exception($"Error getting university requests connection problems{ex.Message}/n {ex.StackTrace}");
     }
             finally
             {
-                _connection.Close();
+                SwitchConnection(false);
             }
         }
 
@@ -95,7 +133,7 @@ namespace DataAccess
         {
             try
             {
-                _connection.Open();
+                SwitchConnection(true);
                 UniversityRequest? request = null;
                 string query = "EXEC [dbo].[usp_UpdateUniversityFundRequest] @RequestID, @StatusID";
                 using (SqlCommand command = new SqlCommand(query, _connection))
@@ -126,7 +164,7 @@ namespace DataAccess
             }
             finally
             {
-                _connection.Close();
+                SwitchConnection(false);
             }
         }
 
@@ -134,7 +172,7 @@ namespace DataAccess
         {
             try
             {
-                _connection.Open();
+                SwitchConnection(true);
                 UniversityRequest? request = null;
                 string query = "EXEC [dbo].[usp_NewUniversityFundRequest] @UniversityID, @Amount, @Comment";
                 using (SqlCommand command = new SqlCommand(query, _connection))
@@ -166,7 +204,7 @@ namespace DataAccess
             }
             finally
             {
-                _connection.Close();
+                SwitchConnection(false);
             }
         }
 
@@ -174,7 +212,7 @@ namespace DataAccess
         {
             try
             {
-                _connection.Open();
+                SwitchConnection(true);
                 List<AllocationDetails> allocations = new List<AllocationDetails>();
                 string query = "SELECT University.[Name] AS University, Provinces.ProvinceName AS Province, UniversityFundAllocation.Budget, UniversityFundAllocation.DateAllocated, ISNULL(SUM(StudentFundAllocation.Amount),0) AS TotalAllocated FROM University INNER JOIN UniversityFundAllocation ON University.ID = UniversityFundAllocation.UniversityID INNER JOIN Provinces ON University.ProvinceID = Provinces.ID LEFT JOIN StudentFundAllocation ON UniversityFundAllocation.ID = StudentFundAllocation.UniversityFundID WHERE DATEDIFF(YEAR, UniversityFundAllocation.DateAllocated, GETDATE()) = 0 GROUP BY University.[Name], Provinces.ProvinceName, UniversityFundAllocation.Budget, UniversityFundAllocation.DateAllocated";
                 using (SqlCommand command = new SqlCommand(query, _connection))
@@ -200,7 +238,7 @@ namespace DataAccess
             }
             finally
             {
-                _connection.Close();
+                SwitchConnection(false);
             }
         }
 

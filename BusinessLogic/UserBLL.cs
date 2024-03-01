@@ -41,6 +41,16 @@ namespace BusinessLogic
 
             }
 
+            if(user.Status=="INACTIVE"){
+                UserManagerResponse response = new UserManagerResponse
+             {
+                 Message = $"The account with email:{model.Email} has been deactivated",
+                 isSuccess = false,
+                 
+             };
+                return response;
+            }
+
             string RoleName = _userDAL.getRoleNameByUserID(user.ID);
 
          
@@ -102,7 +112,13 @@ namespace BusinessLogic
                         PhoneNumber = model.PhoneNumber,
                     };
                     int contactId = _userDAL.InsertContactsAndGetPrimaryKey(contacts);
-
+                    if(contactId==0){
+                    return new UserManagerResponse
+                    {
+                        Message = "Error inserting into contacts table",
+                        isSuccess = false
+                    };
+                    }
                     User user = new User
                     {
                         ContactID = contactId,

@@ -16,9 +16,12 @@ namespace DataAccess.Entity
         [Required]
         [MaxLength(120)]
         public string LastName { get; set; }
+        
+        public string Status { get; set; }
 
         // Foreign Key to ContactDetails table
         public int ContactID { get; set; }
+
 
         
     }
