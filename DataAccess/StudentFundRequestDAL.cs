@@ -8,14 +8,9 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace DataAccess
 {
-    public class StudentFundRequestDAL : ConnectionHelper
+    public class StudentFundRequestDAL(SqlConnection connection) : ConnectionHelper(connection)
     {
-        private readonly SqlConnection _connection;
-
-        public StudentFundRequestDAL(SqlConnection connection) : base(connection)
-        {
-            _connection = connection;
-        }
+        private readonly SqlConnection _connection = connection;
 
         public IEnumerable<StudentFundRequest> GetAllRequests()
         {
@@ -122,7 +117,6 @@ namespace DataAccess
                 {
                     command.Parameters.AddWithValue("@UniversityID", id);
                     UniversityAllocationID = (int)command.ExecuteScalar();
-                    SwitchConnection(false);
                     return UniversityAllocationID;
                 }
             }catch(Exception ex)
@@ -139,25 +133,23 @@ namespace DataAccess
                 SwitchConnection(true);
 
                 string query = "EXEC [dbo].[CreateStudentFundRequestForNewStudent] @IDNumber,@GenderName,@RaceName,@UniversityID,@BirthDate,@Grade,@Amount,@UserID, @UniversityFundID";
-                using (SqlCommand command = new SqlCommand(query, _connection))
-                {
-                    command.Parameters.AddWithValue("@IDNumber", newRequest.IDNumber);
-                    command.Parameters.AddWithValue("@GenderName", newRequest.GenderName);
-                    command.Parameters.AddWithValue("@RaceName", newRequest.RaceName);
-                    command.Parameters.AddWithValue("@UniversityID", newRequest.UniversityID);
-                    command.Parameters.AddWithValue("@BirthDate", newRequest.BirthDate);
-                    command.Parameters.AddWithValue("@Grade", newRequest.Grade);
-                    command.Parameters.AddWithValue("@Amount", newRequest.Amount);
-                    command.Parameters.AddWithValue("@UserID", newRequest.UserID);
-                    command.Parameters.AddWithValue("@UniversityFundID", getUniversityFundAllocationByID(newRequest.UniversityID));
-
-                    command.ExecuteNonQuery();
-                }
+                using SqlCommand command = new SqlCommand(query, _connection);
+                command.Parameters.AddWithValue("@IDNumber", newRequest.IDNumber);
+                command.Parameters.AddWithValue("@GenderName", newRequest.GenderName);
+                command.Parameters.AddWithValue("@RaceName", newRequest.RaceName);
+                command.Parameters.AddWithValue("@UniversityID", newRequest.UniversityID);
+                command.Parameters.AddWithValue("@BirthDate", newRequest.BirthDate);
+                command.Parameters.AddWithValue("@Grade", newRequest.Grade);
+                command.Parameters.AddWithValue("@Amount", newRequest.Amount);
+                command.Parameters.AddWithValue("@UserID", newRequest.UserID);
+                command.Parameters.AddWithValue("@UniversityFundID", getUniversityFundAllocationByID(newRequest.UniversityID));
+                command.ExecuteNonQuery();
             }
             catch (Exception e)
             {
-                SwitchConnection(false);
+                
                 Console.WriteLine($"This is the catch: {e.Message}\n This is stackTrace: {e.StackTrace}");
+                SwitchConnection(false);
             }
             finally
             {

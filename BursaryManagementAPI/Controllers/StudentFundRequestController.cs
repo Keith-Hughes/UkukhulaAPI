@@ -10,16 +10,9 @@ namespace BursaryManagementAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StudentFundRequestController : ControllerBase
+    public class StudentFundRequestController(StudentFundRequestBLL StudentFundRequestBLL) : ControllerBase
     {
-        private readonly StudentFundRequestBLL _StudentFundRequestBLL;
-
-
-        public StudentFundRequestController(StudentFundRequestBLL StudentFundRequestBLL)
-        {
-            _StudentFundRequestBLL = StudentFundRequestBLL;
-
-        }
+        private readonly StudentFundRequestBLL _StudentFundRequestBLL = StudentFundRequestBLL;
 
         [HttpGet]
         public ActionResult<IEnumerable<StudentFundRequest>> GetAllRequests()
