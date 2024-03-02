@@ -52,7 +52,7 @@ namespace BusinessLogic
             }
         }
 
-        public UniversityRequest UpdateUniversityRequest(int requestId, int StatusId)
+        public Dictionary<string,string> UpdateUniversityRequest(int requestId, int StatusId)
         {
             try
             {
