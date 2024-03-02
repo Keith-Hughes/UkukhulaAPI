@@ -14,6 +14,8 @@ namespace BusinessLogic
     {
         private readonly AdminDAL _repository = repository;
 
+        
+
         public IEnumerable<UniversityRequest> GetAllUniversityRequests()
         {
             try
@@ -24,6 +26,11 @@ namespace BusinessLogic
             {
                 throw new Exception($"Error getting university requests: {ex.Message}");
             }
+        }
+        public void UpdateUniversityRequestStatus(int UniversityID, int StatusID)
+        {
+            repository.UpdateUniversityRequestStatus(UniversityID, StatusID);
+
         }
         public List<UniversityUser> GetAllUniversityUsers()
         {

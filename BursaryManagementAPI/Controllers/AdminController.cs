@@ -30,7 +30,20 @@ namespace BursaryManagementAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
+        [Route("UpdateUniversityRequestStatus")]
+        [HttpPut]
+        [Authorize(Roles = Roles.BBDAdmin)]
+        public IActionResult UpdateUniversityRequestStatus(int UniversityID,int StatusID)
+        {
+            try
+            {
+                return Ok(_adminBLL.UpdateUniversityRequestStatus(UniversityID, StatusID));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         [Route("GetUniversityAllocationsByYear")]
         [HttpGet]
         [Authorize(Roles = Roles.BBDAdmin)]
