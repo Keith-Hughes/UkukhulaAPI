@@ -57,17 +57,17 @@ namespace BusinessLogic
                 throw new ArgumentNullException(nameof(newRequest));
         }
 
-        public void Allocate()
-        {
-            try
-            {
-                _repository.allocate();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error allocating funds", ex);
-            }
-        }
+        // public void Allocate()
+        // {
+        //     try
+        //     {
+        //         _repository.allocate();
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         throw new Exception("Error allocating funds", ex);
+        //     }
+        // }
 
     }
 }

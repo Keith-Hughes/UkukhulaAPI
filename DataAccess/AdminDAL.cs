@@ -20,6 +20,42 @@ namespace DataAccess
         /// </summary>
         /// <returns>An IEnumerable&lt;UniversityRequest&gt;? .</returns>
         /// 
+
+        public BBDAllocation? getBudgetAndFunds(){
+             return new UniversityDAL(connection).GetBBDAllocationByYear(DateTime.Now.Year);
+
+        }
+
+        public decimal getMoneySpentForYear(){
+            decimal budget = 0;
+            try
+            {
+                SwitchConnection(true);
+                List<UniversityRequest> requests = new List<UniversityRequest>();
+                string query = "SELECT * FROM [dbo].[vw_getMoneySpent]";
+                
+                using (SqlCommand command = new SqlCommand(query, _connection))
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        budget += (decimal)reader.GetSqlMoney(0);
+
+                    }
+                }
+                SwitchConnection(false);
+                return budget;
+            }
+            catch (Exception ex)
+            {
+                SwitchConnection(false);
+                return budget;
+            }
+           
+            
+            
+        }
+        /// 
         public void UpdateUniversityRequestStatus(int UniversityID, int StatusID)
         {
             /*IEnumerable<UniversityFundRequest> ufa =new UniversityDAL(connection).GetUniversityFundRequests();
@@ -88,6 +124,35 @@ namespace DataAccess
             }
         }
 
+        public int updateUserActivity(int UserID,string Status)
+        {
+            Dictionary<string, string> responseUpdateUser = null;
+            SwitchConnection(true);
+            
+            
+            string query = "UPDATE [dbo].[User] SET Status= @Status WHERE ID = @UserID ";
+            using (SqlCommand command = new SqlCommand(query, _connection))
+            {
+                try
+                {
+                    command.Parameters.AddWithValue("@Status", Status.ToUpper());
+                    command.Parameters.AddWithValue("@UserID", UserID);
+                    SqlDataReader reader = command.ExecuteReader();
+                    
+                }
+                catch (Exception e)
+                {
+                    
+                    SwitchConnection(false);
+                    return 0;
+                }
+            }
+            SwitchConnection(false);
+
+            return 1;
+
+        }
+
         public List<UniversityUser> GetUniversityUsers()
         {
            List<UniversityUser> universityUsers = [];
@@ -104,12 +169,13 @@ namespace DataAccess
                     {
                         UniversityUser? universityUser = new UniversityUser
                         {
-                            UniversityName = reader.GetString(0),
-                            FirstName = reader.GetString(1),
-                            LastName = reader.GetString(2),
-                            PhoneNumber = reader.GetString(3),
-                            Email = reader.GetString(4),
-                            Status = reader.GetString(5),
+                            ID =  reader.GetInt32(0),
+                            UniversityName = reader.GetString(1),
+                            FirstName = reader.GetString(2),
+                            LastName = reader.GetString(3),
+                            PhoneNumber = reader.GetString(4),
+                            Email = reader.GetString(5),
+                            Status = reader.GetString(6),
                         };
                         universityUsers.Add(universityUser);
                     }
@@ -268,9 +334,11 @@ namespace DataAccess
             }
         }
 
-        public void Allocate()
-        {
-            new UniversityDAL(_connection).allocate();
+        public int Allocate()
+        {   
+            
+           return new UniversityDAL(_connection).allocate();
+            
         }
     }
 }
