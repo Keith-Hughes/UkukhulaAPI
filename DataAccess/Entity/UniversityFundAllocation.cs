@@ -12,6 +12,7 @@ namespace DataAccess.Entity
 
         public UniversityFundAllocation(decimal budget, DateTime dateAllocated, int universityID, int bbdAllocationID)
         {
+
             Budget = budget;
             DateAllocated = dateAllocated;
             UniversityID = universityID;

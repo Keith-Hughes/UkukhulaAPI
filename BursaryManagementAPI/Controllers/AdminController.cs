@@ -1,5 +1,6 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Models;
+using BusinessLogic.Models.Response;
 using DataAccess.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,22 @@ namespace BursaryManagementAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-      
+        [Route("updateUserActivity")]
+        [HttpPut]
+        [Authorize(Roles = Roles.BBDAdmin)]
+        public ActionResult<IEnumerable<AllocationDetails>> updateUserActivity(int UserID,string Status)
+        {
+            try
+            {
+                return Ok(_adminBLL.updateUserActivity(UserID,Status));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
         [Route("GetUniversityAllocationsByYear")]
         [HttpGet]
         [Authorize(Roles = Roles.BBDAdmin)]
@@ -80,20 +96,40 @@ namespace BursaryManagementAPI.Controllers
         [Authorize(Roles = Roles.BBDAdmin)]
         public ActionResult Post()
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            try
-            {
-                _adminBLL.Allocate();
-                return Ok(new status("Succesful", "Budget allocated in the all the institutions"));
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(500, new status("Unsuccessful", "Error: " + ex.Message));
-            }
+            // if (!ModelState.IsValid)
+            // {
+            //     return BadRequest(ModelState);
+            // }
+            // try
+            // {
+                FundsResponse response = _adminBLL.Allocate();
+                if (response.isSuccess){
+                     return Ok(response);
+                }
+                else{
+                   return StatusCode(500, response);
+                }
+               
+            // }
+            // catch (System.Exception ex)
+            // {
+            //     return StatusCode(500, new status("Unsuccessful", "Error: " + ex.Message));
+            // }
         }
+         [Route("getBudgetAndFunds")]
+        [HttpGet]
+        [Authorize(Roles = Roles.BBDAdmin)]
+        public IActionResult getBudgetAndFunds(){
+              try
+                {
+                   return Ok(_adminBLL.getBudgetAndFunds());
+                }
+                catch (Exception ex)
+                {
+                  return  BadRequest(ex.Message);
+                }
+        }
+
 
         [Route("newUniversityRequest")]
         [HttpPost]

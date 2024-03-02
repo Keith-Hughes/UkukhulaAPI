@@ -59,25 +59,61 @@ public class UniversityDAL(SqlConnection connection)
         return universities;
     }
 
-    public void allocate()
+    public int allocate()
     {
-        SwitchConnection(true);
         
-        List<int> universityIDs = GetUniversities().Where(u => u.Status == "ACTIVE").Select(u => u.GetID()).ToList();
-        int numberOfInstitutions = universityIDs.Count();
+        SwitchConnection(true);
         BBDAllocation? allocation = GetBBDAllocationByYear(DateTime.Now.Year);
-        if (allocation == null)
-        {
-            throw new Exception("No allocation for the year");
+        if(allocation == null){
+            return 0;
         }
+        List<UniversityFundAllocation> UFA = GetUniversityFundAllocation();
 
+        IEnumerable<UniversityFundRequest> pendingUniversities = GetUniversityFundRequests().Where(u => u.getDateCreated().Year == DateTime.Now.Year).Where(u=> u.getStatusID()==3);
+       if(pendingUniversities.ToList().Count()>0){
+            return 1;
+       }
+
+       IEnumerable<UniversityFundRequest> AcceptedUniversities= GetUniversityFundRequests().Where(u => u.getDateCreated().Year == DateTime.Now.Year).Where(u=> u.getStatusID()==1);
+        List<int> universityIDs = [];
+        foreach(UniversityFundRequest universityFundRequest in AcceptedUniversities){
+
+            IEnumerable<UniversityFundAllocation> alreadyFunded = UFA.Where(u => u.getUniversityID() == universityFundRequest.getUniversityID()).Where(u => u.getDateAllocated().Year == DateTime.Now.Year);
+            if(alreadyFunded.ToList().Count()==0){
+            universityIDs.Add(universityFundRequest.getUniversityID());
+            }
+            
+        }
+    
+        int numberOfInstitutions = universityIDs.Count();
+
+        if(numberOfInstitutions==0){
+            return 4;
+        }
+        Console.WriteLine(numberOfInstitutions);
         decimal budget = allocation.getBudget() / numberOfInstitutions;
+        int rejected =0;
         universityIDs.ForEach(id =>
         {
+            Console.WriteLine(id);
             var universityFundAllocation = new UniversityFundAllocation(budget, DateTime.Now, id, allocation.getID());
-            SaveUniversityFundAllocation(universityFundAllocation);
+            try{
+                SaveUniversityFundAllocation(universityFundAllocation);
+            }catch(SqlException ){
+                    rejected= 5;
+                
+            }
+            
+           
         });
+        if(rejected !=0){
+                return rejected;
+            }
+        if(numberOfInstitutions != AcceptedUniversities.ToList().Count()){
+            return 3;
+        }
         SwitchConnection(false);
+        return 2;
 
     }
 
@@ -107,7 +143,18 @@ public class UniversityDAL(SqlConnection connection)
     }
 
     // GET BBD ALLOCATION BY YEAR
-    public BBDAllocation? GetBBDAllocationByYear(int Year) => BBDAllocations()[0];
+    public BBDAllocation? GetBBDAllocationByYear(int Year) {
+        List <BBDAllocation> allocations =BBDAllocations();
+        BBDAllocation? allocationByYear =null;
+        allocations.ForEach(allocation =>
+        {
+            if(allocation.getDate().Year==Year){
+                allocationByYear= allocation;
+            }
+        });
+
+        return allocationByYear;
+    } 
 
 
     public void SaveUniversityFundAllocation(UniversityFundAllocation allocation)
@@ -141,6 +188,32 @@ public class UniversityDAL(SqlConnection connection)
         SwitchConnection (false);
     }
 
+    public List<UniversityFundAllocation> GetUniversityFundAllocation()
+    {
+        SwitchConnection(true);
+        List<UniversityFundAllocation> requests = new List<UniversityFundAllocation>();
+        string query = "SELECT * FROM UniversityFundAllocation";
+        SqlDataReader reader = new SqlCommand(query, connection).ExecuteReader();
+
+        while (reader.Read())
+        {
+
+            UniversityFundAllocation request = new(
+                                      budget: (decimal)reader.GetSqlMoney(1),
+                                      dateAllocated: reader.GetDateTime(2),
+                                      universityID: reader.GetInt32(3),
+                                      bbdAllocationID: reader.GetInt32(4)
+                                     
+                                     );
+            requests.Add(request);
+        }
+
+        reader.Close();
+        SwitchConnection(false);
+
+        return requests;
+    }
+
     public List<UniversityFundRequest> GetUniversityFundRequests()
     {
         SwitchConnection(true);
@@ -151,12 +224,12 @@ public class UniversityDAL(SqlConnection connection)
         while (reader.Read())
         {
             UniversityFundRequest request = new(
-                                      universityID: reader.GetInt32(0),
+                                      universityID: reader.GetInt32(1),
                                       dateCreated: reader.GetDateTime(2),
                                       amount: (decimal)reader.GetSqlMoney(3),
-                                      statusID: reader.GetString(4),
+                                      statusID: reader.GetInt32(4),
                                       comment: reader.GetString(5)
-                                                                                                                                                                                 );
+                                    );
             requests.Add(request);
         }
 
