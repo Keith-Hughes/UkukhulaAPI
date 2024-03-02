@@ -18,6 +18,38 @@ namespace DataAccess
         /// Gets the all university fund requests.
         /// </summary>
         /// <returns>An IEnumerable&lt;UniversityRequest&gt;? .</returns>
+        /// 
+        public void UpdateUniversityRequestStatus(int UniversityID, int StatusID)
+        {
+            /*IEnumerable<UniversityFundRequest> ufa =new UniversityDAL(connection).GetUniversityFundRequests();
+            string query = "UPDATE [dbo].[UniversityFundRequest]";
+            using (SqlCommand command = new SqlCommand(query, _connection))
+            {
+                try
+                {
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        UniversityUser? universityUser = new UniversityUser
+                        {
+                            UniversityName = reader.GetString(0),
+                            FirstName = reader.GetString(1),
+                            LastName = reader.GetString(2),
+                            PhoneNumber = reader.GetString(3),
+                            Email = reader.GetString(4),
+                            Status = reader.GetString(5),
+                        };
+                        universityUsers.Add(universityUser);
+                    }
+                }
+                catch (Exception e)
+                {
+                    SwitchConnection(false);
+                }
+            }
+            SwitchConnection(false);*/
+
+        }
         public IEnumerable<UniversityRequest>? GetAllUniversityFundRequests()
         {
             try
