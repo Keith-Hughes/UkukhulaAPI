@@ -1,4 +1,5 @@
-﻿using DataAccess.Entity;
+﻿using Azure;
+using DataAccess.Entity;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,38 @@ namespace DataAccess
         /// Gets the all university fund requests.
         /// </summary>
         /// <returns>An IEnumerable&lt;UniversityRequest&gt;? .</returns>
+        /// 
+        public void UpdateUniversityRequestStatus(int UniversityID, int StatusID)
+        {
+            /*IEnumerable<UniversityFundRequest> ufa =new UniversityDAL(connection).GetUniversityFundRequests();
+            string query = "UPDATE [dbo].[UniversityFundRequest]";
+            using (SqlCommand command = new SqlCommand(query, _connection))
+            {
+                try
+                {
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        UniversityUser? universityUser = new UniversityUser
+                        {
+                            UniversityName = reader.GetString(0),
+                            FirstName = reader.GetString(1),
+                            LastName = reader.GetString(2),
+                            PhoneNumber = reader.GetString(3),
+                            Email = reader.GetString(4),
+                            Status = reader.GetString(5),
+                        };
+                        universityUsers.Add(universityUser);
+                    }
+                }
+                catch (Exception e)
+                {
+                    SwitchConnection(false);
+                }
+            }
+            SwitchConnection(false);*/
+
+        }
         public IEnumerable<UniversityRequest>? GetAllUniversityFundRequests()
         {
             try
@@ -129,43 +162,36 @@ namespace DataAccess
         }
 
 
-        public UniversityRequest? UpdateUniversityFundRequest(int requestID, int statusID)
+        public Dictionary<string,string> UpdateUniversityFundRequest(int requestID, int statusID)
         {
+            Dictionary<string, string> response = new Dictionary<string, string>();
             try
             {
+                
                 SwitchConnection(true);
                 UniversityRequest? request = null;
-                string query = "EXEC [dbo].[usp_UpdateUniversityFundRequest] @RequestID, @StatusID";
+                string query = "UPDATE UniversityFundRequest SET StatusID = @StatusID WHERE ID = @RequestID;";
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
                     command.Parameters.AddWithValue("@RequestID", requestID);
                     command.Parameters.AddWithValue("@StatusID", statusID);
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        while (reader.Read())
-                        {
-                            request = new UniversityRequest(
-                                                           reader.GetInt32(0),
-                                                           reader.GetString(1),
-                                                           reader.GetString(2),
-                                                           reader.GetDecimal(3),
-                                                           reader.GetString(4),
-                                                           reader.GetDateTime(5),
-                                                           reader.GetString(6)
-                                                           );
-                        }
+                        response.Add("message", "Upated successfully");
                     }
                 }
-                return request;
+                return response;
             }
             catch (Exception ex)
             {
-                throw new Exception("Error updating university fund request connection problems: ");
+                response.Add("message", "Error Updating");
             }
             finally
             {
                 SwitchConnection(false);
+                
             }
+            return response;
         }
 
         public UniversityRequest? NewUniversityFundRequest(int universityID, decimal amount, string comment)

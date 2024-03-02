@@ -30,7 +30,7 @@ namespace BursaryManagementAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
+      
         [Route("GetUniversityAllocationsByYear")]
         [HttpGet]
         [Authorize(Roles = Roles.BBDAdmin)]
@@ -121,21 +121,21 @@ namespace BursaryManagementAPI.Controllers
         [Route("updateUniversityRequest")]
         [HttpPut]
         [Authorize(Roles = Roles.BBDAdmin)]
-        public void Put(int requestId, int statusId)
+        public IActionResult Put(int requestId, int statusId)
         {
             if (requestId == 0 || statusId == 0)
             {
-                BadRequest("Invalid input");
+               return BadRequest("Invalid input");
             }
             else
             {
                 try
                 {
-                    Ok(_adminBLL.UpdateUniversityRequest(requestId, statusId));
+                   return Ok(_adminBLL.UpdateUniversityRequest(requestId, statusId));
                 }
                 catch (Exception ex)
                 {
-                    BadRequest(ex.Message);
+                    return BadRequest(ex.Message);
                 }
             }
         }
