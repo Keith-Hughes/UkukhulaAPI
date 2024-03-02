@@ -194,6 +194,41 @@ namespace DataAccess
             return response;
         }
 
+
+        public Dictionary<string, string> RejectUniversityFundRequest(int requestID, int statusID, string comment)
+        {
+            Dictionary<string, string> response = new Dictionary<string, string>();
+            try
+            {
+
+                SwitchConnection(true);
+                string query = "UPDATE UniversityFundRequest SET StatusID = @StatusID, Comment = @Comment WHERE ID = @RequestID;";
+                using (SqlCommand command = new SqlCommand(query, _connection))
+                {
+                    command.Parameters.AddWithValue("@RequestID", requestID);
+                    command.Parameters.AddWithValue("@StatusID", statusID);
+                    command.Parameters.AddWithValue("@Comment", comment);
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        response.Add("message", "Rejection Sent Successfully");
+                    }
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Add("message", "Error Updating");
+            }
+            finally
+            {
+                SwitchConnection(false);
+
+            }
+            return response;
+        }
+
+
+
         public UniversityRequest? NewUniversityFundRequest(int universityID, decimal amount, string comment)
         {
             try

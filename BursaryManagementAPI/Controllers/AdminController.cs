@@ -139,5 +139,27 @@ namespace BursaryManagementAPI.Controllers
                 }
             }
         }
+
+        [Route("rejectUniversityRequest")]
+        [HttpPut]
+        [Authorize(Roles = Roles.BBDAdmin)]
+        public IActionResult RejectUniversity(int requestId, int statusId,string comment)
+        {
+            if (requestId == 0 || statusId == 0)
+            {
+                return BadRequest("Invalid input");
+            }
+            else
+            {
+                try
+                {
+                    return Ok(_adminBLL.UpdateUniversityRequest(requestId, statusId));
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
     }
 }

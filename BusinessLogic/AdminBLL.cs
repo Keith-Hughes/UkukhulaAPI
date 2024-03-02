@@ -64,6 +64,18 @@ namespace BusinessLogic
             }
         }
 
+        public Dictionary<string, string> RejectUniversityRequest(int requestId, int StatusId, string comment)
+        {
+            try
+            {
+                return _repository.RejectUniversityFundRequest(requestId, StatusId, comment);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating university request: {ex.Message}");
+            }
+        }
+
         public UniversityRequest NewUniversityRequest(int universityID, decimal amount, string comment)
         {
             try
