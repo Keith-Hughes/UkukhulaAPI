@@ -49,6 +49,12 @@ namespace DataAccess
                 
                 return requests;
             }
+            catch(Exception e)
+            {
+                
+                Console.WriteLine(e.Message);
+                return null;
+            }
             finally
             {
                 SwitchConnection(false);

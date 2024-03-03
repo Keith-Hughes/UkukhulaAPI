@@ -14,6 +14,8 @@ namespace BursaryManagementAPI.Controllers
     public class AdminController(AdminBLL adminBLL) : ControllerBase
     {
         
+
+
         private readonly AdminBLL _adminBLL = adminBLL;
 
         [Route("GetAllUniversityRequests")]

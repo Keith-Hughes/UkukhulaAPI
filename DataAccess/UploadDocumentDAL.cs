@@ -55,9 +55,10 @@ namespace DataAccess
                 {
                     while(reader.Read())
                     {
-                        byte[] cvData = (byte[])reader["CV"];
-                        byte[] transcriptData = (byte[])reader["Transcript"];
-                        byte[] idData = (byte[])reader["IDDocument"];
+                        byte[]? cvData = reader["CV"] != DBNull.Value ? (byte[])reader["CV"] : null;
+                        byte[]? transcriptData = reader["Transcript"] != DBNull.Value ? (byte[])reader["Transcript"] : null;
+                        byte[]? idData = reader["IDDocument"] != DBNull.Value ? (byte[])reader["IDDocument"] : null;
+                        SwitchConnection(false);
                         return new UploadDocument
                         {
                             
@@ -66,6 +67,7 @@ namespace DataAccess
                             IDDocument = ConvertToIFormFile(idData, "ID.pdf")
                         };
                     }
+                    SwitchConnection(false);
                     return new UploadDocument { };
                 }
             }
@@ -84,12 +86,21 @@ namespace DataAccess
 
         private IFormFile ConvertToIFormFile(byte[] fileData, string fileName)
         {
-            // Create an IFormFile from the byte array
-            return new FormFile(new System.IO.MemoryStream(fileData), 0, fileData.Length, null, fileName)
+            if (fileData != null)
             {
-                Headers = new HeaderDictionary(),
-                ContentType = "application/octet-stream"
-            };
+                // Create an IFormFile from the byte array
+                return new FormFile(new System.IO.MemoryStream(fileData), 0, fileData.Length, null, fileName)
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "application/octet-stream"
+                };
+            }
+            else
+            {
+                // Handle the case where fileData is null
+                // You might return null, throw an exception, or handle it based on your application's logic
+                return null;
+            }
         }
     }
 }

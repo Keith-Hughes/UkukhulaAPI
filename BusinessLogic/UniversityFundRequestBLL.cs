@@ -1,11 +1,7 @@
 ﻿
-using BusinessLogic.Models;
+
 using DataAccess.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace BusinessLogic
 {
@@ -57,17 +53,17 @@ namespace BusinessLogic
                 throw new ArgumentNullException(nameof(newRequest));
         }
 
-        // public void Allocate()
-        // {
-        //     try
-        //     {
-        //         _repository.allocate();
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         throw new Exception("Error allocating funds", ex);
-        //     }
-        // }
+        public void Allocate()
+        {
+            try
+            {
+                _repository.allocate();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error allocating funds", ex);
+            }
+        }
 
     }
 }
