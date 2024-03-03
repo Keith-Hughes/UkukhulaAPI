@@ -5,10 +5,10 @@ namespace DataAccess.Entity
     public class UniversityFundAllocation
     {
         public int ID { get; set; }
-        decimal Budget { get; set; }
-        DateTime DateAllocated { get; set; }
-        int UniversityID { get; set; }
-        int BBDAllocationID { get; set; }
+        public decimal Budget { get; set; }
+        public DateTime DateAllocated { get; set; }
+        public int UniversityID { get; set; }
+        public int BBDAllocationID { get; set; }
 
         public UniversityFundAllocation(decimal budget, DateTime dateAllocated, int universityID, int bbdAllocationID)
         {
@@ -26,15 +26,15 @@ namespace DataAccess.Entity
         }
 
         //gettes for all the attributes
-        public decimal getBudget() => Budget;
+        // public decimal getBudget() => Budget;
 
-        public DateTime getDateAllocated() => DateAllocated;
+        // public DateTime getDateAllocated() => DateAllocated;
 
-        public int getUniversityID() => UniversityID;
+        // public int getUniversityID() => UniversityID;
 
-        public int getBBDAllocationID() => BBDAllocationID;
+        // public int getBBDAllocationID() => BBDAllocationID;
 
-        public int getID() => ID;
+        // public int getID() => ID;
 
 
     }

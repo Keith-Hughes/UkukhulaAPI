@@ -59,6 +59,55 @@ public class UniversityDAL(SqlConnection connection)
         return universities;
     }
 
+    public List<UniversityFundAllocation> AllocateProjection(){
+        List<UniversityFundAllocation> universityFundAllocations = [];
+        SwitchConnection(true);
+        BBDAllocation? allocation = GetBBDAllocationByYear(DateTime.Now.Year);
+        if(allocation==null){
+            return universityFundAllocations;
+        }
+        List<UniversityFundAllocation> UFA = GetUniversityFundAllocation();
+
+        IEnumerable<UniversityFundRequest> pendingUniversities = GetUniversityFundRequests().Where(u => u.getDateCreated().Year == DateTime.Now.Year).Where(u=> u.getStatusID()==3);
+       if(pendingUniversities.ToList().Count()>0){
+            universityFundAllocations.Add(new UniversityFundAllocation(0, DateTime.Today, 0, 0));
+            return universityFundAllocations;
+       }
+       IEnumerable<UniversityFundRequest> AcceptedUniversities= GetUniversityFundRequests().Where(u => u.getDateCreated().Year == DateTime.Now.Year).Where(u=> u.getStatusID()==1);
+        List<int> universityIDs = [];
+        foreach(UniversityFundRequest universityFundRequest in AcceptedUniversities){
+
+            IEnumerable<UniversityFundAllocation> alreadyFunded = UFA.Where(u => u.UniversityID == universityFundRequest.getUniversityID()).Where(u => u.DateAllocated.Year == DateTime.Now.Year);
+            if(alreadyFunded.ToList().Count()==0){
+            universityIDs.Add(universityFundRequest.getUniversityID());
+            }
+            
+        }
+    
+        int numberOfInstitutions = universityIDs.Count();
+
+        if(numberOfInstitutions==0){
+            universityFundAllocations.Add(new UniversityFundAllocation(1, DateTime.Today, 0, 0));
+            return universityFundAllocations;
+        }
+
+         Console.WriteLine(numberOfInstitutions);
+        decimal budget = allocation.getBudget() / numberOfInstitutions;
+        int rejected =0;
+        universityIDs.ForEach(id =>
+        {
+            // Console.WriteLine(budget);
+            // Console.WriteLine(DateTime.Now);
+            // Console.WriteLine(id);
+            // Console.WriteLine(allocation.getID());
+
+            // // UniversityFundAllocation universityFundAllocation = ;
+            universityFundAllocations.Add(new UniversityFundAllocation(budget, DateTime.Now, id, allocation.getID()));
+        });
+        
+        return universityFundAllocations;
+    }
+
     public int allocate()
     {
         
@@ -78,7 +127,7 @@ public class UniversityDAL(SqlConnection connection)
         List<int> universityIDs = [];
         foreach(UniversityFundRequest universityFundRequest in AcceptedUniversities){
 
-            IEnumerable<UniversityFundAllocation> alreadyFunded = UFA.Where(u => u.getUniversityID() == universityFundRequest.getUniversityID()).Where(u => u.getDateAllocated().Year == DateTime.Now.Year);
+            IEnumerable<UniversityFundAllocation> alreadyFunded = UFA.Where(u => u.UniversityID == universityFundRequest.getUniversityID()).Where(u => u.DateAllocated.Year == DateTime.Now.Year);
             if(alreadyFunded.ToList().Count()==0){
             universityIDs.Add(universityFundRequest.getUniversityID());
             }
@@ -163,11 +212,11 @@ public class UniversityDAL(SqlConnection connection)
         string query = "INSERT INTO UniversityFundAllocation (Budget, DateAllocated, UniversityID, BBDAllocationID) VALUES (@Budget, @DateAllocated, @UniversityID, @BBDAllocationID)";
         using (SqlCommand command = new SqlCommand(query, _connection))
         {
-            Console.WriteLine(allocation.getBudget());
-            command.Parameters.AddWithValue("@Budget", allocation.getBudget());
-            command.Parameters.AddWithValue("@DateAllocated", allocation.getDateAllocated());
-            command.Parameters.AddWithValue("@UniversityID", allocation.getUniversityID());
-            command.Parameters.AddWithValue("@BBDAllocationID", allocation.getBBDAllocationID());
+            Console.WriteLine(allocation.Budget);
+            command.Parameters.AddWithValue("@Budget", allocation.Budget);
+            command.Parameters.AddWithValue("@DateAllocated", allocation.DateAllocated);
+            command.Parameters.AddWithValue("@UniversityID", allocation.UniversityID);
+            command.Parameters.AddWithValue("@BBDAllocationID", allocation.BBDAllocationID);
             command.ExecuteNonQuery();
         }
         SwitchConnection(false);

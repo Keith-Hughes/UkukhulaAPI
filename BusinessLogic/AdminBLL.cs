@@ -142,6 +142,12 @@ namespace BusinessLogic
             }
         }
 
+        public List<UniversityFundAllocation> AllocateProjection(){
+            List<UniversityFundAllocation> universityFundAllocations =_repository.AllocateProjection();
+            
+            return universityFundAllocations;
+        }
+
         public FundsResponse Allocate()
         {
             // try

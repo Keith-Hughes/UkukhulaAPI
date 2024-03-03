@@ -368,6 +368,11 @@ namespace DataAccess
                 SwitchConnection(false);
             }
         }
+        public List<UniversityFundAllocation> AllocateProjection(){
+             List<UniversityFundAllocation> universityFundAllocations= new UniversityDAL(_connection).AllocateProjection();
+           
+            return universityFundAllocations;
+        }
 
         public int Allocate()
         {   

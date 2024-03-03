@@ -90,6 +90,17 @@ namespace BursaryManagementAPI.Controllers
             }
         
         }
+        [Route("AllocateProjection")]
+        [HttpGet]
+        [Authorize(Roles = Roles.BBDAdmin)]
+        public List<UniversityFundAllocation> putProjection(){
+
+            List<UniversityFundAllocation> universityFundAllocations = _adminBLL.AllocateProjection();
+            // universityFundAllocations.ForEach(i => {
+            //    Console.WriteLine( i.getDateAllocated());
+            // });
+                return universityFundAllocations;
+        }
 
         [Route("allocateBuget")]
         [HttpPost]
