@@ -42,7 +42,8 @@ namespace BursaryManagementAPI.Controllers
             try
             {
                 IFormFile file = _uploadDocumentBLL.GetFile(requestID, DocumentType);
-                if(file == null)
+                Console.WriteLine(file.Length);
+                if(file == null || file.Length <= 4)
                 {
                     return NotFound("No Documents found");
                 }
