@@ -9,7 +9,6 @@ using System.Transactions;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 
-
 namespace BusinessLogic
 {
     public class UserBLL

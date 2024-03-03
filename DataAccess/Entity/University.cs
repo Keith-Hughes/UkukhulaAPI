@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Dynamic;
+
 
 namespace DataAccess.Entity
 {

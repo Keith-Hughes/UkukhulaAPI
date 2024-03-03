@@ -1,5 +1,7 @@
-﻿using DataAccess.Entity;
+﻿
+using DataAccess.Entity;
 using Microsoft.Data.SqlClient;
+
 namespace DataAccess
 {
     public class AdminDAL(SqlConnection connection) : ConnectionHelper(connection)

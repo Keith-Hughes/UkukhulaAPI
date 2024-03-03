@@ -3,7 +3,6 @@ using BusinessLogic;
 using DataAccess;
 using Azure.Storage.Blobs;
 using Microsoft.OpenApi.Models;
-using System;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
