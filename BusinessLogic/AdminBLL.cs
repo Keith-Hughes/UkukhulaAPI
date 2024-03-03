@@ -33,11 +33,12 @@ namespace BusinessLogic
 
         
 
-        public IEnumerable<UniversityRequest> GetAllUniversityRequests()
+        public IEnumerable<UniversityRequest> GetAllUniversityRequests(int pageNumber, int pageSize)
         {
             try
             {
-                return _repository.GetAllUniversityFundRequests();
+                int offset = (pageNumber - 1) * pageSize;
+                return _repository.GetAllUniversityFundRequests(offset,pageSize);
             }
             catch (Exception ex)
             {

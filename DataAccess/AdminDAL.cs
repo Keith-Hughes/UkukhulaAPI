@@ -81,28 +81,32 @@ namespace DataAccess
             SwitchConnection(false);*/
 
         }
-        public IEnumerable<UniversityRequest>? GetAllUniversityFundRequests()
+        public IEnumerable<UniversityRequest>? GetAllUniversityFundRequests(int offset, int pageSize)
         {
             try
             {
                 SwitchConnection(true);
                 List<UniversityRequest> requests = new List<UniversityRequest>();
-                string query = "SELECT * FROM [dbo].[vw_UniversityRequests]";
+                string query = "SELECT * FROM [dbo].[vw_UniversityRequests] ORDER BY RequestID OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
                 using (SqlCommand command = new SqlCommand(query, _connection))
-                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    while (reader.Read())
-                    {
-                        UniversityRequest universityRequest = new UniversityRequest(
-                                        reader.GetInt32(0),
-                                        reader.GetString(1),
-                                        reader.GetString(2),
-                                        reader.GetDecimal(3),
-                                        reader.GetString(4),
-                                        reader.GetDateTime(5),
-                                        reader.GetString(6));
-                        requests.Add(universityRequest);
+                    command.Parameters.AddWithValue("@Offset", offset);
+                    command.Parameters.AddWithValue("@PageSize", pageSize);
 
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            UniversityRequest universityRequest = new UniversityRequest(
+                                            reader.GetInt32(0),
+                                            reader.GetString(1),
+                                            reader.GetString(2),
+                                            reader.GetDecimal(3),
+                                            reader.GetString(4),
+                                            reader.GetDateTime(5),
+                                            reader.GetString(6));
+                            requests.Add(universityRequest);
+                        }
                     }
                 }
                 SwitchConnection(false);
@@ -117,6 +121,7 @@ namespace DataAccess
                 SwitchConnection(false);
             }
         }
+
 
         public int updateUserActivity(int UserID,string Status)
         {

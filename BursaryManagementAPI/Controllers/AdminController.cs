@@ -21,12 +21,12 @@ namespace BursaryManagementAPI.Controllers
         [Route("GetAllUniversityRequests")]
         [HttpGet]
        // [Authorize(Roles = Roles.BBDAdmin)]
-        public ActionResult<IEnumerable<UniversityRequest>> Get()
+        public ActionResult<IEnumerable<UniversityRequest>> Get(int pageNumber = 1, int pageSize = 10)
         {
            
             try
             {
-                return Ok(_adminBLL.GetAllUniversityRequests());
+                return Ok(_adminBLL.GetAllUniversityRequests(pageNumber,pageSize));
             }
             catch (Exception ex)
             {
