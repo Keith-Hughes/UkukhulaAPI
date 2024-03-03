@@ -1,7 +1,5 @@
 ﻿using DataAccess.Entity;
 using Microsoft.Data.SqlClient;
-using System.Data;
-using Shared.Models;
 
 namespace DataAccess
 {
