@@ -1,10 +1,8 @@
 ﻿using DataAccess;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
-using DataAccess.Entity;
-using System.Net;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Shared.Models;
+
 
 namespace BusinessLogic
 {
@@ -17,21 +15,44 @@ namespace BusinessLogic
             _uploadDocumentDAL = uploadDocumentDAL;
         }
 
-        public async Task<ActionResult> UploadDocument(int requestID, Models.UploadDocument uploadDocument)
+        public async Task<UploadDocument> UploadDocument(int requestID, UploadDocument uploadDocument)
         {
-            try
-            {
-                UploadDocument upload = new()
+            
+                if (uploadDocument.CV != null)
                 {
-                    File = uploadDocument.File,
-                    DocumentType = uploadDocument.DocumentType
-                };
-                return await _uploadDocumentDAL.UploadDocument(requestID, upload);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error uploading document: {ex.Message}");
-            }
+                    _uploadDocumentDAL.updateDocument(requestID, "CV", uploadDocument.CV);
+                }
+                if (uploadDocument.Transcript != null)
+                {
+                    _uploadDocumentDAL.updateDocument(requestID, "Transcript", uploadDocument.Transcript);
+
+                }
+                if (uploadDocument.IDDocument != null)
+                {
+                    _uploadDocumentDAL.updateDocument(requestID, "IDDocument", uploadDocument.IDDocument);
+
+                }
+            
+            
+                return _uploadDocumentDAL.getExistingDocuments(requestID);
         }
+
+        public IFormFile GetFile(int requestID, string DocumentType)
+        {
+            UploadDocument currentDocs = _uploadDocumentDAL.getExistingDocuments(requestID);
+            switch (DocumentType.ToLower())
+            {
+                case "cv":
+                    return currentDocs.CV;
+                case "transcript":
+                    return currentDocs.Transcript;
+                case "iddocument":
+                    return currentDocs.IDDocument;
+
+            }
+            return null;
+        }
+
+
     }
 }

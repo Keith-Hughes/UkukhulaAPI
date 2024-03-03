@@ -1,58 +1,95 @@
-﻿using Azure.Core;
-using Azure.Storage.Blobs;
-using DataAccess.Entity;
+﻿
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Shared.Models;
+using System.Xml.Linq;
+
 
 namespace DataAccess
 {
-    public class UploadDocumentDAL
+    public class UploadDocumentDAL(SqlConnection connection) : ConnectionHelper(connection)
     {
-        private readonly SqlConnection _connection;
-        private readonly BlobServiceClient _blobServiceClient;
+        
 
-        public UploadDocumentDAL(SqlConnection connection, BlobServiceClient blobServiceClient)
+        public void updateDocument(int requestId, string documentType, IFormFile document)
         {
-            _connection = connection;
-            _blobServiceClient = blobServiceClient;
-        }
-        public async Task<ActionResult> UploadDocument(int requestID, UploadDocument uploadDocument)
-        {
-            try
+            SwitchConnection(true);
+            string query = "";
+            switch (documentType.ToLower())
             {
-                var file = uploadDocument.File;
-                if (file == null || file.Length == 0)
-                    return new BadRequestObjectResult("File is empty");
+                case "cv":
+                    query = "UPDATE Document SET CV = @Document WHERE RequestID = @RequestID";
+                    break;
 
-                await _connection.OpenAsync();
-
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
-
-                var blobClient = _blobServiceClient.GetBlobContainerClient("bursarymanagementcontainer").GetBlobClient(uniqueFileName);
-                await blobClient.UploadAsync(file.OpenReadStream());
-
-                string query = "INSERT INTO Document (RequestID, TypeID, Document) VALUES (@RequestID, @DocumentType, @DocumentPath)";
-                using (SqlCommand command = new SqlCommand(query, _connection))
+                case "transcript":
+                    query = "UPDATE Document SET Transcript = @Document WHERE RequestID = @RequestID";
+                    break;
+                case "iddocument":
+                    query = "UPDATE Document SET IDDocument = @Document WHERE RequestID = @RequestID";
+                    break;
+            }
+            using (SqlCommand command = new SqlCommand(query, _connection))
+            {
+                using (var memoryStream = new MemoryStream())
                 {
-                    command.Parameters.AddWithValue("@RequestID", requestID);
-                    command.Parameters.AddWithValue("@DocumentType", uploadDocument.DocumentType);
-                    command.Parameters.AddWithValue("@DocumentPath", blobClient.Uri.ToString());
-                    await command.ExecuteNonQueryAsync();
+                    document.CopyTo(memoryStream);
+                    command.Parameters.AddWithValue("@RequestID", requestId);
+                    command.Parameters.AddWithValue("@Document", memoryStream.ToArray());
+                    command.ExecuteNonQuery();
                 }
+            }
+            SwitchConnection(false);
 
-                return new OkObjectResult("File uploaded successfully!");
-            }
-            finally
-            {
-                if (_connection.State != System.Data.ConnectionState.Closed)
-                    _connection.Close();
-            }
         }
 
+        public UploadDocument getExistingDocuments(int requestId)
+        {
+            SwitchConnection(true) ;
+            string query = "SELECT [CV], [IDDocument], [Transcript] FROM Document WHERE RequestID=@RequestId";
+            using (SqlCommand command = new SqlCommand(query, _connection))
+            {
+                command.Parameters.AddWithValue("@RequestId", requestId);
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while(reader.Read())
+                    {
+                        byte[] cvData = (byte[])reader["CV"];
+                        byte[] transcriptData = (byte[])reader["Transcript"];
+                        byte[] idData = (byte[])reader["IDDocument"];
+                        return new UploadDocument
+                        {
+                            
+                            CV = ConvertToIFormFile(cvData, "CV.pdf"),
+                            Transcript = ConvertToIFormFile(transcriptData, "Transcript.pdf"),
+                            IDDocument = ConvertToIFormFile(idData, "ID.pdf")
+                        };
+                    }
+                    return new UploadDocument { };
+                }
+            }
+
+            }
+
+        public bool documentsExits(UploadDocument document)
+        {
+            if(document.CV != null || document.Transcript != null || document.IDDocument != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+
+        private IFormFile ConvertToIFormFile(byte[] fileData, string fileName)
+        {
+            // Create an IFormFile from the byte array
+            return new FormFile(new System.IO.MemoryStream(fileData), 0, fileData.Length, null, fileName)
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = "application/octet-stream"
+            };
+        }
     }
 }

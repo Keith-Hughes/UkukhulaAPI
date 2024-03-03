@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BusinessLogic;
-using System;
-using System.Threading.Tasks;
+using Shared.Models;
 
 namespace BursaryManagementAPI.Controllers
 {
@@ -20,15 +19,38 @@ namespace BursaryManagementAPI.Controllers
         }
 
         [HttpPost("{requestID}/upload")]
-        public async Task<ActionResult> UploadDocument(int requestID, [FromForm] BusinessLogic.Models.UploadDocument uploadDocument)
+        public async Task<ActionResult> UploadDocument(int requestID, [FromForm] UploadDocument uploadDocument)
         {
             try
             {
-                return await _uploadDocumentBLL.UploadDocument(requestID, uploadDocument);
+                // Check if any file is provided
+                if (uploadDocument.CV == null && uploadDocument.Transcript == null && uploadDocument.IDDocument == null)
+                {
+                    return BadRequest("No files provided for upload.");
+                }
+                return Ok(_uploadDocumentBLL.UploadDocument(requestID, uploadDocument));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while uploading the document.");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("get/{requestID}/{DocumentType}")]
+        public IActionResult getDocument(int requestID, string DocumentType) 
+        {
+            try
+            {
+                IFormFile file = _uploadDocumentBLL.GetFile(requestID, DocumentType);
+                if(file == null)
+                {
+                    return NotFound("No Documents found");
+                }
+                return File(file.OpenReadStream(), file.ContentType, file.FileName );
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

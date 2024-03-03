@@ -9,6 +9,8 @@
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CreateStudentFundRequestForNewStudent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\StudentFundRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UploadDocument.cs" />
   </ItemGroup>
 </Project>

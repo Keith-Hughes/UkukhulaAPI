@@ -1,10 +1,6 @@
 ﻿using DataAccess.Entity;
 using DataAccess;
-using System;
-using System.Collections.Generic;
-using System.Net;
 using BusinessLogic.Models.Response;
-using Microsoft.AspNetCore.Identity;
 using System.Transactions;
 using Shared.Models;
 
@@ -32,7 +28,7 @@ namespace BusinessLogic
             }
         }
 
-        public UserManagerResponse Create(Models.CreateStudentFundRequestForNewStudent newRequest)
+        public UserManagerResponse Create(CreateStudentFundRequestForNewStudent newRequest)
         {
             if (newRequest != null)
 
@@ -53,8 +49,7 @@ namespace BusinessLogic
 
                         };
                      
-                        if (true)//Check if user Identity has been added successfully
-                        {
+                       
                             //Create Contacts object and insert to table,
                             ContactDetails contactDetails = new ContactDetails
                             {
@@ -106,7 +101,7 @@ namespace BusinessLogic
                                 isSuccess = true,
                             };
 
-                        }
+                        
                     }
                 }
 
