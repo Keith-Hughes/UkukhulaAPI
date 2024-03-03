@@ -200,7 +200,7 @@ namespace BursaryManagementAPI.Controllers
             {
                 try
                 {
-                    return Ok(_adminBLL.UpdateUniversityRequest(requestId, statusId));
+                    return Ok(_adminBLL.RejectUniversityRequest(requestId, statusId,comment));
                 }
                 catch (Exception ex)
                 {
