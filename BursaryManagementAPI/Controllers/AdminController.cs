@@ -173,6 +173,7 @@ namespace BursaryManagementAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
+              
                 return BadRequest();
             }
             

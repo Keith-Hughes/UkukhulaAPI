@@ -14,5 +14,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\StudentFundRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UploadDocument.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ResponseModels\StudentRequestResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResponseModels\TokenResponse.cs" />
   </ItemGroup>
 </Project>

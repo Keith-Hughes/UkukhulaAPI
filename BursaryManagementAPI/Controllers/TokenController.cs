@@ -1,37 +1,44 @@
-﻿using BusinessLogic.Models;
+﻿using BusinessLogic;
+using BusinessLogic.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Shared.ResponseModels;
 using System;
 using System.Collections.Generic;
 
 [ApiController]
-[Route("[controller]")]
-public class TokenController : ControllerBase
+[Route("api/[controller]")]
+public class TokenController(TokenBLL tokenBLL) : ControllerBase
 {
-    private static readonly Dictionary<string, DateTime> Tokens = new Dictionary<string, DateTime>();
+    private readonly TokenBLL _tokenBLL = tokenBLL;
+ 
 
-    [HttpPost]
+    [HttpGet]
     [Route("generate")]
-    [Authorize(Roles = Roles.UniversityAdmin)]
+    //[Authorize(Roles = Roles.UniversityAdmin)]
     public IActionResult GenerateToken()
     {
-        var token = Guid.NewGuid().ToString();
-        var expirationDate = DateTime.UtcNow.AddDays(7);
+        string token = Guid.NewGuid().ToString();
+        DateTime expirationDate = DateTime.UtcNow.AddDays(7);
 
-        Tokens[token] = expirationDate;
-
-        return Ok(new { Token = token, ExpirationDate = expirationDate });
+        return Ok(_tokenBLL.saveToken(token, expirationDate));
     }
 
     [HttpGet]
     [Route("validate/{token}")]
     public IActionResult ValidateToken(string token)
     {
-        if (Tokens.TryGetValue(token, out var expirationDate) && expirationDate > DateTime.UtcNow)
+        if (!_tokenBLL.isTokenValid(token))
         {
-            return Ok(new { Valid = true });
+            return Ok(new TokenResponse
+            {
+                isTokenExpired = true,
+            });
         }
-
-        return Ok(new { Valid = false });
+        else
+        {
+            return Ok(new TokenResponse { isTokenExpired = false});
+        }
     }
 }

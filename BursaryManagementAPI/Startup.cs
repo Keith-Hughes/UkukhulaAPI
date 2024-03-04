@@ -43,6 +43,8 @@ public class Startup
         services.AddScoped<UniversityFundRequestBLL>();
         services.AddScoped<AdminBLL>();
         services.AddScoped<AdminDAL>();
+        services.AddScoped<TokenBLL>();
+        services.AddScoped<TokenDAL>();
 
         //adding Azure services to the dependency injection container (scoped to instantiate a new object when requested )
         services.AddScoped(provider =>
@@ -54,6 +56,7 @@ public class Startup
 
         services.AddAuthentication(auth =>
         {
+
             auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options =>
