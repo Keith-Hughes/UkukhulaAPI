@@ -91,7 +91,7 @@ namespace BusinessLogic
 
                             };
 
-                            _repository.Create(dataAccessModel);
+                            int requestID = _repository.Create(dataAccessModel);
 
                             scope.Complete();
                             return new UserManagerResponse
@@ -99,6 +99,7 @@ namespace BusinessLogic
                                 UniversityID = newRequest.UniversityID,
                                 Message = "Successfully Submited Student Request For "+newRequest.FirstName,
                                 isSuccess = true,
+                                StudentRequestID = requestID
                             };
 
                         

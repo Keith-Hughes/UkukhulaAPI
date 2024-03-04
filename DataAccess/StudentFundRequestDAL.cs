@@ -1,6 +1,7 @@
 ﻿using DataAccess.Entity;
 using Microsoft.Data.SqlClient;
 using Shared.Models;
+using System.Data;
 
 namespace DataAccess
 {
@@ -130,14 +131,15 @@ namespace DataAccess
             }
         }
 
-        public void Create(CreateStudentFundRequestForNewStudent newRequest)
+        public int Create(CreateStudentFundRequestForNewStudent newRequest)
         {
             try
             {
                 SwitchConnection(true);
 
                 string query = "EXEC [dbo].[CreateStudentFundRequestForNewStudent] @IDNumber,@GenderName,@RaceName,@UniversityID,@BirthDate,@Grade,@Amount,@UserID, @UniversityFundID";
-                using SqlCommand command = new SqlCommand(query, _connection);
+                using SqlCommand command = new SqlCommand("CreateStudentFundRequestForNewStudent", _connection);
+                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@IDNumber", newRequest.IDNumber);
                 command.Parameters.AddWithValue("@GenderName", newRequest.GenderName);
                 command.Parameters.AddWithValue("@RaceName", newRequest.RaceName);
@@ -147,17 +149,30 @@ namespace DataAccess
                 command.Parameters.AddWithValue("@Amount", newRequest.Amount);
                 command.Parameters.AddWithValue("@UserID", newRequest.UserID);
                 command.Parameters.AddWithValue("@UniversityFundID", getUniversityFundAllocationByID(newRequest.UniversityID));
+
+                SqlParameter returnParameter = command.Parameters.Add("RetVal", SqlDbType.Int);
+                returnParameter.Direction = ParameterDirection.ReturnValue;
+
+                // Execute the stored procedure
                 command.ExecuteNonQuery();
+
+                // Retrieve the return value
+                int returnValue = (int)returnParameter.Value;
+                Console.WriteLine(returnValue);
+                return returnValue;
             }
             catch (Exception e)
             {
                 
                 Console.WriteLine($"This is the catch: {e.Message}\n This is stackTrace: {e.StackTrace}");
                 SwitchConnection(false);
+                return 0;
+
             }
             finally
             {
                 SwitchConnection(false);
+                
             }
         }
 

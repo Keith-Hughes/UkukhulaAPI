@@ -218,10 +218,6 @@ namespace DataAccess
                 }
             }
             SwitchConnection(false);
-<<<<<<< Updated upstream
-=======
-            
->>>>>>> Stashed changes
             return universityUsers;
 
         }

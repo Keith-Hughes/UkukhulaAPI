@@ -36,7 +36,7 @@ namespace Shared.Models
         public DateTime BirthDate { get; set; }
 
         [Required]
-        public byte Grade { get; set; }
+        public int Grade { get; set; }
 
         [Required]
         public decimal Amount { get; set; }

@@ -9,5 +9,7 @@
         public DateTime? ExpireDate { get; set; }
         public string? Role { get; set; }
         public int? UniversityID {  get; set; }
+
+        public int? StudentRequestID { get; set;}
     }
 }

@@ -65,11 +65,7 @@ namespace BursaryManagementAPI.Controllers
         [Route("GetUniversityUsers")]
         [HttpGet]
         [Authorize(Roles = Roles.BBDAdmin)]
-<<<<<<< Updated upstream
         public ActionResult<List<UniversityUser>> GetUniversityUsers()
-=======
-        public ActionResult GetUniversityUsers()
->>>>>>> Stashed changes
         {
             try
             {
