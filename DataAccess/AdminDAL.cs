@@ -87,11 +87,11 @@ namespace DataAccess
             {
                 SwitchConnection(true);
                 List<UniversityRequest> requests = new List<UniversityRequest>();
-                string query = "SELECT * FROM [dbo].[vw_UniversityRequests] ORDER BY RequestID OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+                string query = "SELECT * FROM [dbo].[vw_UniversityRequests]";
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
-                    command.Parameters.AddWithValue("@Offset", offset);
-                    command.Parameters.AddWithValue("@PageSize", pageSize);
+                    // command.Parameters.AddWithValue("@Offset", offset);
+                    // command.Parameters.AddWithValue("@PageSize", pageSize);
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -151,6 +151,34 @@ namespace DataAccess
             return 1;
 
         }
+        
+        public int AllocateUniversity(int URequestID,decimal AmountAllocated)
+        {
+            SwitchConnection(true);
+            
+            
+            string query = "EXEC [dbo].[allocateAUniversity] @RequestID, @AmountAllocated";
+            using (SqlCommand command = new(query, _connection))
+            {
+                try
+                {
+                    command.Parameters.AddWithValue("@RequestID", URequestID);
+                    command.Parameters.AddWithValue("@AmountAllocated", AmountAllocated);
+                    int reader = command.ExecuteNonQuery();
+                    SwitchConnection(false);
+                    return reader;
+                   
+                }
+                catch (Exception e)
+                {
+                    SwitchConnection(false);
+                    return 0 ;
+                }
+            }
+            
+            return 4;
+
+        }
 
         public List<UniversityUser> GetUniversityUsers()
         {
@@ -159,7 +187,7 @@ namespace DataAccess
             
             
             string query = "SELECT * FROM [dbo].[GetAllUsers]";
-            using (SqlCommand command = new SqlCommand(query, _connection))
+            using (SqlCommand command = new(query, _connection))
             {
                 try
                 {
@@ -168,6 +196,7 @@ namespace DataAccess
                     {
                         UniversityUser? universityUser = new UniversityUser
                         {
+
                             ID =  reader.GetInt32(0),
                             UniversityName = reader.GetString(1),
                             FirstName = reader.GetString(2),
@@ -176,6 +205,8 @@ namespace DataAccess
                             Email = reader.GetString(5),
                             Status = reader.GetString(6),
                         };
+                        Console.WriteLine(universityUser.UniversityName);
+
                         universityUsers.Add(universityUser);
                     }
                 }
@@ -185,7 +216,6 @@ namespace DataAccess
                 }
             }
             SwitchConnection(false);
-
             return universityUsers;
 
         }

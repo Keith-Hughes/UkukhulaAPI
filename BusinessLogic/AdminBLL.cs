@@ -50,6 +50,20 @@ namespace BusinessLogic
             repository.UpdateUniversityRequestStatus(UniversityID, StatusID);
 
         }
+        
+
+        
+        public int AllocateUniversity(int URequestID,decimal AmountAllocated)
+        {
+            try
+            {
+                return _repository.AllocateUniversity(URequestID,AmountAllocated);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting allocation details: {ex.Message}");
+            }
+        }
         public List<UniversityUser> GetAllUniversityUsers()
         {
             try

@@ -21,7 +21,7 @@ namespace BursaryManagementAPI.Controllers
         [Route("GetAllUniversityRequests")]
         [HttpGet]
        // [Authorize(Roles = Roles.BBDAdmin)]
-        public ActionResult<IEnumerable<UniversityRequest>> Get(int pageNumber = 1, int pageSize = 10)
+        public ActionResult<IEnumerable<UniversityRequest>> Get(int pageNumber = 1, int pageSize = 30)
         {
            
             try
@@ -67,7 +67,7 @@ namespace BursaryManagementAPI.Controllers
         [Route("GetUniversityUsers")]
         [HttpGet]
         [Authorize(Roles = Roles.BBDAdmin)]
-        public ActionResult<IEnumerable<AllocationDetails>> GetUniversityUsers()
+        public ActionResult<List<UniversityUser>> GetUniversityUsers()
         {
             try
             {
@@ -102,6 +102,28 @@ namespace BursaryManagementAPI.Controllers
             //    Console.WriteLine( i.getDateAllocated());
             // });
                 return universityFundAllocations;
+        }
+
+        [Route("allocateUniversityBudget")]
+        [HttpPost]
+        [Authorize(Roles = Roles.BBDAdmin)]
+        public ActionResult PostUniversity(int URequestID,decimal AmountAllocated)
+        {
+            // if (!ModelState.IsValid)
+            // {
+            //     return BadRequest(ModelState);
+            // }
+            // try
+            // {
+            int response = _adminBLL.AllocateUniversity(URequestID,AmountAllocated);
+            if (response ==1)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return StatusCode(500, response);
+            }
         }
 
         [Route("allocateBuget")]
