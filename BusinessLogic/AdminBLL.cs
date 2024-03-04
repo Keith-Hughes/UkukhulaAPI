@@ -1,4 +1,5 @@
-﻿using BusinessLogic.Models.Response;
+﻿using BusinessLogic.Models;
+using BusinessLogic.Models.Response;
 using DataAccess;
 using DataAccess.Entity;
 
@@ -31,14 +32,24 @@ namespace BusinessLogic
             return null;
         }
 
-        
 
-        public IEnumerable<UniversityRequest> GetAllUniversityRequests(int pageNumber, int pageSize)
+
+        public PaginatedResponse<UniversityRequest> GetAllUniversityRequests(int pageNumber, int pageSize)
         {
             try
             {
                 int offset = (pageNumber - 1) * pageSize;
-                return _repository.GetAllUniversityFundRequests(offset,pageSize);
+                IEnumerable<UniversityRequest> requests = _repository.GetAllUniversityFundRequests(offset, pageSize);
+
+                int totalRecords = _repository.GetTotalUniversityRequestsCount();
+
+                int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+                return new PaginatedResponse<UniversityRequest>
+                {
+                    Data = requests,
+                    TotalPages = totalPages
+                };
             }
             catch (Exception ex)
             {

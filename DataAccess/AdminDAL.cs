@@ -334,6 +334,28 @@ namespace DataAccess
             }
         }
 
+        public int GetTotalUniversityRequestsCount()
+        {
+            try
+            {
+                SwitchConnection(true);
+                string query = "SELECT COUNT(*) FROM [dbo].[vw_UniversityRequests]";
+                using (SqlCommand command = new SqlCommand(query, _connection))
+                {
+                    int totalCount = (int)command.ExecuteScalar();
+                    return totalCount;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting total count of university requests: {ex.Message}");
+            }
+            finally
+            {
+                SwitchConnection(false);
+            }
+        }
+
         public IEnumerable<AllocationDetails>? GetUniversityFundAllocations()
         {
             try
