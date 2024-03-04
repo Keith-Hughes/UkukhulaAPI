@@ -14,8 +14,6 @@ namespace BursaryManagementAPI.Controllers
     public class AdminController(AdminBLL adminBLL) : ControllerBase
     {
         
-
-
         private readonly AdminBLL _adminBLL = adminBLL;
 
         [Route("GetAllUniversityRequests")]
@@ -67,7 +65,11 @@ namespace BursaryManagementAPI.Controllers
         [Route("GetUniversityUsers")]
         [HttpGet]
         [Authorize(Roles = Roles.BBDAdmin)]
+<<<<<<< Updated upstream
         public ActionResult<List<UniversityUser>> GetUniversityUsers()
+=======
+        public ActionResult GetUniversityUsers()
+>>>>>>> Stashed changes
         {
             try
             {
@@ -224,7 +226,7 @@ namespace BursaryManagementAPI.Controllers
             {
                 try
                 {
-                    return Ok(_adminBLL.RejectUniversityRequest(requestId, statusId,comment));
+                    return Ok(_adminBLL.UpdateUniversityRequest(requestId, statusId));
                 }
                 catch (Exception ex)
                 {

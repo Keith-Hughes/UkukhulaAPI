@@ -194,6 +194,8 @@ namespace DataAccess
                     SqlDataReader reader = command.ExecuteReader();
                     while (reader.Read())
                     {
+                        Console.WriteLine("got one");
+                        Console.WriteLine(reader.GetString(2));
                         UniversityUser? universityUser = new UniversityUser
                         {
 
@@ -216,6 +218,10 @@ namespace DataAccess
                 }
             }
             SwitchConnection(false);
+<<<<<<< Updated upstream
+=======
+            
+>>>>>>> Stashed changes
             return universityUsers;
 
         }
