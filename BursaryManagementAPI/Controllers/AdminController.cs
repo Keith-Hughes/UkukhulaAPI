@@ -130,12 +130,7 @@ namespace BursaryManagementAPI.Controllers
         [Authorize(Roles = Roles.BBDAdmin)]
         public ActionResult Post()
         {
-            // if (!ModelState.IsValid)
-            // {
-            //     return BadRequest(ModelState);
-            // }
-            // try
-            // {
+
                 FundsResponse response = _adminBLL.Allocate();
                 if (response.isSuccess){
                      return Ok(response);
@@ -144,11 +139,7 @@ namespace BursaryManagementAPI.Controllers
                    return StatusCode(500, response);
                 }
                
-            // }
-            // catch (System.Exception ex)
-            // {
-            //     return StatusCode(500, new status("Unsuccessful", "Error: " + ex.Message));
-            // }
+
         }
          [Route("getBudgetAndFunds")]
         [HttpGet]
@@ -167,7 +158,7 @@ namespace BursaryManagementAPI.Controllers
 
         [Route("newUniversityRequest")]
         [HttpPost]
-        public ActionResult Post(NewUniversityRequest NewUniversity )
+        public ActionResult<NewUniversityRequest> Post(NewUniversityRequest NewUniversity )
         {
             if (!ModelState.IsValid)
             {
