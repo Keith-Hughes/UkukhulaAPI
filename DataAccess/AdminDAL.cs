@@ -1,6 +1,7 @@
 ﻿
 using DataAccess.Entity;
 using Microsoft.Data.SqlClient;
+using Shared.Models;
 
 namespace DataAccess
 {
@@ -14,6 +15,39 @@ namespace DataAccess
         /// </summary>
         /// <returns>An IEnumerable&lt;UniversityRequest&gt;? .</returns>
         /// 
+
+        public NewUniversityRequest addUniversityRequest(NewUniversityRequest NewUniversityRequest){
+            try
+            {
+                SwitchConnection(true);
+ 
+                string query = "EXEC [dbo].[usp_NewUniversityFundRequest] @UniversityName @Amount @FirstName @Lastname @ContactNumber @Email @Province";
+                using (SqlCommand command = new SqlCommand(query, _connection))
+                {
+                    command.Parameters.AddWithValue("@UniversityName", NewUniversityRequest.universityName);
+                    command.Parameters.AddWithValue("@Amount", NewUniversityRequest.amount);
+                    command.Parameters.AddWithValue("@FirstName", NewUniversityRequest.firstName);
+                    command.Parameters.AddWithValue("@Lastname", NewUniversityRequest.lastName);
+                    command.Parameters.AddWithValue("@ContactNumber", NewUniversityRequest.contactNumber);
+                    command.Parameters.AddWithValue("@Email", NewUniversityRequest.email);
+                    command.Parameters.AddWithValue("@Province", NewUniversityRequest.province);
+                    
+                    command.ExecuteNonQuery();
+                    
+                }
+                SwitchConnection(false);
+                return NewUniversityRequest; 
+            }
+            catch (Exception ex)
+            {
+                SwitchConnection(false);
+                throw new Exception($"Error getting university requests connection problems{ex.Message}/n {ex.StackTrace}");
+            }
+            finally
+            {
+                SwitchConnection(false);
+            }
+        }
 
         public BBDAllocation? getBudgetAndFunds(){
              return new UniversityDAL(connection).GetBBDAllocationByYear(DateTime.Now.Year);

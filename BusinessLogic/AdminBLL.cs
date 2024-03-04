@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.Models.Response;
 using DataAccess;
 using DataAccess.Entity;
+using Shared.Models;
 
 
 namespace BusinessLogic
@@ -29,6 +30,13 @@ namespace BusinessLogic
                 
             }
             return null;
+        }
+        public NewUniversityRequest addUniversityRequest(NewUniversityRequest UniversityRequest){
+            try{
+                return _repository.addUniversityRequest(UniversityRequest);
+            }catch(Exception e){
+                return null;
+            }
         }
 
         

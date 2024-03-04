@@ -167,9 +167,7 @@ namespace BursaryManagementAPI.Controllers
 
         [Route("newUniversityRequest")]
         [HttpPost]
-        [Authorize(Roles =Roles.UniversityAdmin)]
-        [Authorize(Roles = Roles.BBDAdmin)]
-        public ActionResult Post(NewUniversityRequest newUniversity )
+        public ActionResult Post(NewUniversityRequest NewUniversity )
         {
             if (!ModelState.IsValid)
             {
@@ -177,7 +175,7 @@ namespace BursaryManagementAPI.Controllers
                 return BadRequest();
             }
             
-            return Ok(newUniversity);
+            return Ok(_adminBLL.addUniversityRequest(NewUniversity));
             
         }
 
