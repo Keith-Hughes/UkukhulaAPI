@@ -31,7 +31,7 @@ namespace BusinessLogic
             }
             return null;
         }
-        public NewUniversityRequest addUniversityRequest(NewUniversityRequest UniversityRequest){
+        public NewUniversityRequest? addUniversityRequest(NewUniversityRequest UniversityRequest){
             try{
                 return _repository.addUniversityRequest(UniversityRequest);
             }catch(Exception e){
