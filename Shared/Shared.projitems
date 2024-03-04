@@ -10,7 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Models\CreateStudentFundRequestForNewStudent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\NewUniversityRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\StudentFundRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UploadDocument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResponseModels\StudentRequestResponse.cs" />
   </ItemGroup>
 </Project>

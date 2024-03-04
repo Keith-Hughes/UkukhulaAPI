@@ -3,6 +3,7 @@ using DataAccess;
 using BusinessLogic.Models.Response;
 using System.Transactions;
 using Shared.Models;
+using Shared.ResponseModels;
 
 namespace BusinessLogic
 {
@@ -28,7 +29,7 @@ namespace BusinessLogic
             }
         }
 
-        public UserManagerResponse Create(CreateStudentFundRequestForNewStudent newRequest)
+        public StudentRequestResponse Create(CreateStudentFundRequestForNewStudent newRequest)
         {
             if (newRequest != null)
 
@@ -94,37 +95,40 @@ namespace BusinessLogic
                             int requestID = _repository.Create(dataAccessModel);
 
                             scope.Complete();
-                            return new UserManagerResponse
-                            {
-                                UniversityID = newRequest.UniversityID,
-                                Message = "Successfully Submited Student Request For "+newRequest.FirstName,
-                                isSuccess = true,
-                                StudentRequestID = requestID
-                            };
-
+                        return new StudentRequestResponse
+                        {
+                            ID = requestID,
+                            IsSuccess = true,
+                            Message = "Successfull Created Request for " + newRequest.FirstName,
+                            Amount = newRequest.Amount,
+                            
+                        };
+                            
                         
                     }
                 }
 
                 catch (Exception ex)
                 {
-                    return new UserManagerResponse
+                    return new StudentRequestResponse
                     {
-                        UniversityID = newRequest.UniversityID,
-                        Message = "Error creating student fund request" + ex.Message,
-                        isSuccess = false,
+                        ID = 0,
+                        IsSuccess = false,
+                        Message = "Unable to create Request: "+ex.Message,
+      
                     };
                     throw new Exception("Error creating student fund request" + ex.Message);
                 }
 
             else
-                return new UserManagerResponse
+                return new StudentRequestResponse
                 {
-                    UniversityID = newRequest.UniversityID,
-                    Message = new ArgumentNullException(nameof(newRequest)).Message,
-                    isSuccess = false,
+                    ID = 0,
+                    IsSuccess = false,
+                    Message = "No information Received"
+
                 };
-            
+
         }
 
         public IEnumerable<StudentFundRequest> GetStudentFundRequestsByUniversity(int universityID)

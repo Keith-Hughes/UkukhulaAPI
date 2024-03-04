@@ -3,7 +3,9 @@ using BusinessLogic.Models;
 using BusinessLogic.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Shared.Models;
+using Shared.ResponseModels;
 
 
 namespace BursaryManagementAPI.Controllers
@@ -34,18 +36,22 @@ namespace BursaryManagementAPI.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return Ok(new StudentRequestResponse
+                {
+                    IsSuccess = false,
+                    Message = "Invalid information received: " + ModelState.ToString()
+                });
             }
 
             try
             {
-                UserManagerResponse userResponse = _StudentFundRequestBLL.Create(newRequest);
-                if (!userResponse.isSuccess)
+                StudentRequestResponse studentRequestResponse = _StudentFundRequestBLL.Create(newRequest);
+                if (!studentRequestResponse.IsSuccess)
                 {
-                    return BadRequest(userResponse);
+                    return Ok(studentRequestResponse);
                 }
 
-                return Ok(userResponse);
+                return Ok(studentRequestResponse);
             }
             catch (Exception ex)
             {

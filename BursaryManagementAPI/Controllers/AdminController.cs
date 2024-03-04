@@ -4,6 +4,7 @@ using BusinessLogic.Models.Response;
 using DataAccess.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -168,23 +169,15 @@ namespace BursaryManagementAPI.Controllers
         [HttpPost]
         [Authorize(Roles =Roles.UniversityAdmin)]
         [Authorize(Roles = Roles.BBDAdmin)]
-        public void Post(int universityID, decimal amount, string comment)
+        public ActionResult Post(NewUniversityRequest newUniversity )
         {
-            if (universityID == 0 || amount == 0 || comment == null)
+            if (!ModelState.IsValid)
             {
-                BadRequest("Invalid input");
+                return BadRequest();
             }
-            else
-            {
-                try
-                {
-                    Ok(_adminBLL.NewUniversityRequest(universityID, amount, comment));
-                }
-                catch (Exception ex)
-                {
-                    BadRequest(ex.Message);
-                }
-            }
+            
+            return Ok(newUniversity);
+            
         }
 
         [Route("updateUniversityRequest")]
