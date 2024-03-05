@@ -22,12 +22,11 @@ namespace BusinessLogic
             message.From.Add(new MailboxAddress("Ukukhula", _configuration["EmailConfig:Username"]));
             message.To.Add(new MailboxAddress(toName, toEmail));
             message.Subject = subject;
-
+            var bodyBuilder = new BodyBuilder();
+            bodyBuilder.HtmlBody = body;
             // Set the body of the email
-            message.Body = new TextPart("plain")
-            {
-                Text = body
-            };
+            message.Body = bodyBuilder.ToMessageBody();
+            
             Console.WriteLine(message);
             Console.WriteLine(_configuration["EmailConfig:Username"]);
 

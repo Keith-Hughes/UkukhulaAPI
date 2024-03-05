@@ -40,7 +40,7 @@ namespace BursaryManagementAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                UserManagerResponse result = _userManager.ProcessRegistration(model ,universityID);
+                UserManagerResponse result = _userManager.ProcessRegistration(model, universityID);
                 if (result.isSuccess)
                 {
                     return Ok(result);
