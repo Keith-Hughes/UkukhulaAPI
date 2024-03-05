@@ -45,6 +45,7 @@ public class Startup
         services.AddScoped<AdminDAL>();
         services.AddScoped<TokenBLL>();
         services.AddScoped<TokenDAL>();
+        services.AddScoped<Email>();
 
         //adding Azure services to the dependency injection container (scoped to instantiate a new object when requested )
         services.AddScoped(provider =>

@@ -16,7 +16,7 @@ public class TokenController(TokenBLL tokenBLL) : ControllerBase
 
     [HttpGet]
     [Route("generate")]
-    //[Authorize(Roles = Roles.UniversityAdmin)]
+    [Authorize(Roles = Roles.UniversityAdmin)]
     public IActionResult GenerateToken()
     {
         string token = Guid.NewGuid().ToString();
