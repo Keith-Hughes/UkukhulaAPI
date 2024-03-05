@@ -51,6 +51,7 @@ namespace BursaryManagementAPI.Controllers
         [Route("GetUniversityAllocationsByYear")]
         [HttpGet]
         [Authorize(Roles = Roles.BBDAdmin)]
+        [Authorize(Roles = Roles.UniversityAdmin)]
         public ActionResult<IEnumerable<AllocationDetails>> GetYearAllocations()
         {
             try
@@ -82,6 +83,7 @@ namespace BursaryManagementAPI.Controllers
         [Route("GetAllUniversities")]
         [HttpGet]
         [Authorize(Roles = Roles.BBDAdmin)]
+        [Authorize(Roles = Roles.UniversityAdmin)]
         public ActionResult<IEnumerable<University>> GetAllUniversities() {
             try { 
                 return Ok(_adminBLL.GetAllUniversityDetails());
